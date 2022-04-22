@@ -1,11 +1,20 @@
 import { CreateUserDto } from './../users/dto/create-user.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from './../users/users.service';
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
-// import { UsersService }
+import { AuthGuard } from '@nestjs/passport';
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
@@ -15,15 +24,21 @@ export class AuthController {
   ) {}
 
   @Post('signup')
-  signUp(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  async signUp(@Body() createUserDto: CreateUserDto) {
+    const account = await this.usersService.create(createUserDto);
+    return this.authService.verifyEmail(account.email, account.name);
   }
 
   @Post('signin')
   signIn(@Body() createAuthDto: CreateAuthDto) {
     return this.authService.signIn(createAuthDto);
   }
-
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  @Get('test')
+  test() {
+    return 'this is test for authen';
+  }
   // @Get(':id')
   // findOne(@Param('id') id: string) {
   //   return this.authService.findOne(+id);

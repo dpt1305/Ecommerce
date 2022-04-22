@@ -1,21 +1,22 @@
+import { SendmailService } from './../sendmail/sendmail.service';
 import { UsersService } from './../users/users.service';
 import { Injectable } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { sign, verify } from 'jsonwebtoken';
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private sendmailService: SendmailService,
   ) {}
   async signIn(createAuthDto: CreateAuthDto) {
-    console.log('asdfdfs');
     const { email, password } = createAuthDto;
     const account = await this.usersService.findByEmail(email);
     const check = await bcrypt.compare(password, account.password);
-    console.log(check);
     if (!account || !check) {
       return 'Email or password is incorrect';
     }
@@ -24,8 +25,13 @@ export class AuthService {
     return `jwt: ${access_token}`;
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  async verifyEmail(email: string, name: string) {
+    const token = await sign(
+      { email: email, exp: 60 * 5 },
+      process.env.SECRET_KEY_VERIFY,
+    );
+    console.log(token);
+    this.sendmailService.sendVerifiedEmail(email, name, token);
   }
 
   findOne(id: number) {

@@ -23,7 +23,8 @@ export class User {
   @Column()
   phone: string;
 
-  @Column({ unique: true })
+  @Column()
+  // { unique: true }
   email: string;
 
   @Column()
