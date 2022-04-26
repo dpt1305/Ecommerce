@@ -34,6 +34,7 @@ export class CategoriesService {
       });
       await this.categoryBannerRepository.save(newBanner);
     });
+    return category;
   }
 
   findAll() {
@@ -46,12 +47,12 @@ export class CategoriesService {
   }
 
   async update(id: string, updateCategoryDto: UpdateCategoryDto) {
-    const result = await this.categoriesRepository
-      .createQueryBuilder()
-      .update(Category)
-      .set({ ...updateCategoryDto })
-      .where({ id })
-      .execute();
+    console.log(updateCategoryDto);
+    
+    const result = await this.categoriesRepository.save({
+      id,
+      ...updateCategoryDto,
+    });
     const afterUpdate = await this.categoriesRepository.findOne({ id });
     return afterUpdate;
   }

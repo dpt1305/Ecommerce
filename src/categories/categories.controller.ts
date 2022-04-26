@@ -74,9 +74,6 @@ export class CategoriesController {
     @Body() createCategoryDto: CreateCategoryDto,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
-    // console.log(createCategoryDto);
-    // console.log(files);
-
     return this.categoriesService.create(createCategoryDto, files);
   }
 
@@ -91,10 +88,26 @@ export class CategoriesController {
   }
 
   @Patch(':id')
+  @FormDataRequest()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+        },
+        status: {
+          type: 'string',
+        },
+      },
+    },
+  })
   update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
+    console.log(updateCategoryDto);
     return this.categoriesService.update(id, updateCategoryDto);
   }
 
