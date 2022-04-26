@@ -1,4 +1,4 @@
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { CreateCategoryBannerDto } from './dto/create-category-banner.dto';
 import {
   Controller,
@@ -8,7 +8,17 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFile,
+  UploadedFiles,
 } from '@nestjs/common';
+import {
+  FileInterceptor,
+  FilesInterceptor,
+  FileFieldsInterceptor,
+  AnyFilesInterceptor,
+} from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -20,14 +30,54 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
-  @FormDataRequest()
-  create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoriesService.create(createCategoryDto);
-  }
-  @Post('banner')
-  @FormDataRequest()
-  createBanner(@Body() createCategoryBannerDto: CreateCategoryBannerDto) {
-    return this.categoriesService.createBanner(createCategoryBannerDto);
+  // @FormDataRequest()
+  @UseInterceptors(
+    FilesInterceptor('files', 20, {
+      storage: diskStorage({
+        destination: './files',
+        filename: function (req, file, cb) {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(null, uniqueSuffix + '-' + file.originalname);
+        },
+      }),
+      fileFilter: function (req, file, callback) {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+          return callback(new Error('Only image files are allowed!'), false);
+        }
+        callback(null, true);
+      },
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        files: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+        name: {
+          type: 'string',
+        },
+        status: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  create(
+    @Body() createCategoryDto: CreateCategoryDto,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ) {
+    // console.log(createCategoryDto);
+    // console.log(files);
+
+    return this.categoriesService.create(createCategoryDto, files);
   }
 
   @Get()

@@ -31,7 +31,7 @@ export class AuthService {
       process.env.SECRET_KEY_VERIFY,
     );
     console.log(token);
-    this.sendmailService.sendVerifiedEmail(email, name, token);
+    this.sendmailService.sendVerifiedEmail(email, token);
   }
 
   findOne(id: number) {

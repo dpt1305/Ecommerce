@@ -8,13 +8,13 @@ import {
   IsBooleanString,
   IsNotEmpty,
 } from 'class-validator';
-
+import { Type } from 'class-transformer';
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @IsMobilePhone('vn_VN')
+  @IsMobilePhone('vi-VN')
   phone: string;
 
   @IsEmail()
@@ -26,14 +26,15 @@ export class CreateUserDto {
   password: string;
 
   @IsDate()
+  @Type(() => Date)
   birthday: Date;
 
   @IsString()
   avatar: string;
 
-  @IsEnum(Role)
-  // @IsNotEmpty()
-  role: Role;
+  // @IsEnum(Role)
+  // // @IsNotEmpty()
+  // role: Role;
 
   @IsString()
   address: string;

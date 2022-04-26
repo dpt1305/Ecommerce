@@ -1,21 +1,25 @@
 import { Category } from './category.entity';
-import { PrimaryGeneratedColumn, Column, Entity, OneToOne, JoinColumn } from 'typeorm';
+import {
+  PrimaryGeneratedColumn,
+  Column,
+  Entity,
+  OneToOne,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
 
 @Entity()
 export class CategoryBanner {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column({ nullable: false })
   position: number;
 
-  @Column()
+  @Column({ nullable: false })
   url: string;
 
-  @Column({ nullable: true })
-  categoryId: string;
-
-  @OneToOne((type) => Category, (category) => category.categoryBanner)
-  @JoinColumn({ referencedColumnName: 'id' })
+  @ManyToOne((type) => Category, (category) => category.categoryBanner)
+  // @JoinColumn({ referencedColumnName: 'id' })
   category: Category;
 }

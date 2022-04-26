@@ -22,12 +22,10 @@ export class Category {
   @Column('text')
   status: CategoryStatus;
 
-  // @Column( { nullable: true })
-  // cate
   @OneToMany(
     (type) => CategoryBanner,
     (categoryBanner) => categoryBanner.category,
   )
-  @JoinColumn({ referencedColumnName: 'categoryId' })
+  // @JoinColumn({ referencedColumnName: 'categoryId' })
   categoryBanner: CategoryBanner[];
 }

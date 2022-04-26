@@ -15,13 +15,25 @@ export class CategoriesService {
     @InjectRepository(CategoryBannerRepository)
     private categoryBannerRepository: CategoryBannerRepository,
   ) {}
-  create(createCategoryDto: CreateCategoryDto) {
-    return this.categoriesRepository.createCategory(createCategoryDto);
-  }
-  createBanner(createCategoryBannerDto: CreateCategoryBannerDto) {
-    return this.categoryBannerRepository.createCategoryBanner(
-      createCategoryBannerDto,
-    );
+  async create(
+    createCategoryDto: CreateCategoryDto,
+    files: Array<Express.Multer.File>,
+  ) {
+    const { name, status } = createCategoryDto;
+    const category = await this.categoriesRepository.create({
+      name,
+      status,
+    });
+    await this.categoriesRepository.save(category);
+
+    files.forEach(async (element, index) => {
+      const newBanner = await this.categoryBannerRepository.create({
+        position: index + 1,
+        url: element.path,
+        category,
+      });
+      await this.categoryBannerRepository.save(newBanner);
+    });
   }
 
   findAll() {

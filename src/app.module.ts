@@ -11,6 +11,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { MulterModule } from '@nestjs/platform-express';
 import { UploadsModule } from './uploads/uploads.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -22,6 +23,18 @@ import { UploadsModule } from './uploads/uploads.module';
       database: 'ecommerce',
       autoLoadEntities: true,
       synchronize: true,
+    }),
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        port: 587,
+        ignoreTLS: true,
+        secure: false,
+        auth: {
+          user: process.env.USER,
+          pass: process.env.PASSWORD,
+        },
+      },
     }),
     ConfigModule.forRoot({
       envFilePath: ['.env'],
