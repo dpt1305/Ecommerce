@@ -12,6 +12,7 @@ import { NestjsFormDataModule } from 'nestjs-form-data';
 import { MulterModule } from '@nestjs/platform-express';
 import { UploadsModule } from './uploads/uploads.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { ItemsModule } from './items/items.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -51,6 +52,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
     CategoriesModule,
     NestjsFormDataModule,
     UploadsModule,
+    ItemsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
