@@ -1,8 +1,11 @@
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ItemsService } from './items.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
-
+// import { ApiTags, ApiConsumes}
+@ApiTags('Items')
+// @ApiConsumes('multipart/form-data')
 @Controller('items')
 export class ItemsController {
   constructor(private readonly itemsService: ItemsService) {}

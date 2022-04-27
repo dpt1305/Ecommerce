@@ -1,12 +1,19 @@
-import { CategoryStatus } from './../../categories/entities/category.entity';
+import { ImageItem } from './image-item.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  OneToMany,
 } from 'typeorm';
-// import { Column, PrimaryGeneratedColumn, }
+import { Category } from '../../categories/entities/category.entity';
+
+export enum ItemStatus {
+  Active = 'Active',
+  Inactive = 'Inactive',
+}
 @Entity()
 export class Item {
   @PrimaryGeneratedColumn('uuid')
@@ -38,10 +45,10 @@ export class Item {
 
   @Column({
     type: 'enum',
-    enum: CategoryStatus,
-    default: CategoryStatus.Active,
+    enum: ItemStatus,
+    default: ItemStatus.Active,
   })
-  status: CategoryStatus;
+  status: ItemStatus;
 
   @CreateDateColumn({
     type: 'timestamp',
@@ -55,4 +62,10 @@ export class Item {
     onUpdate: 'CURRENT_TIMESTAMP(6)',
   })
   modified_at: Date;
+
+  @ManyToOne((_) => Category, (category) => category.item)
+  category: Category;
+
+  @OneToMany(() => ImageItem, (imageItem) => imageItem.item)
+  imageItem: ImageItem;
 }

@@ -1,3 +1,4 @@
+import { Item } from './../../items/entities/item.entity';
 import { CategoryBanner } from './category-banner.entity';
 import {
   Column,
@@ -21,6 +22,9 @@ export class Category {
 
   @Column('text')
   status: CategoryStatus;
+
+  @OneToMany((type) => Item, (item) => item.category)
+  item: Item[];
 
   @OneToMany(
     (type) => CategoryBanner,
