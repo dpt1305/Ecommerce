@@ -12,5 +12,5 @@ export class CreateCategoryDto {
   @IsNotEmpty()
   status: CategoryStatus;
 
-  banners: CreateCategoryBannerDto[];
+  // banners: CreateCategoryBannerDto[];
 }

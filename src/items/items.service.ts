@@ -1,12 +1,25 @@
+import { CategoriesService } from './../categories/categories.service';
+import { ItemsRepository } from './items.repository';
 import { ApiTags, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { Injectable } from '@nestjs/common';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ItemsService {
-  create(createItemDto: CreateItemDto) {
-    return 'This action adds a new item';
+  constructor(
+    private categoriesService: CategoriesService,
+    @InjectRepository(ItemsRepository)
+    private itemsRepository: ItemsRepository,
+  ) {}
+  async create(createItemDto: CreateItemDto, categoryId: string, files: any) {
+    const category = this.categoriesService.findOne(categoryId);
+    const newItem = await this.itemsRepository.create({
+      ...createItemDto,
+    });
+    await this.itemsRepository.save(newItem);
+    return newItem;
   }
 
   findAll() {

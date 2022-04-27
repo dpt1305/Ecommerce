@@ -14,5 +14,6 @@ import { CategoryBannerRepository } from './category-banner.repository';
     TypeOrmModule.forFeature([CategoryBannerRepository]),
     NestjsFormDataModule,
   ],
+  exports: [CategoriesService],
 })
 export class CategoriesModule {}

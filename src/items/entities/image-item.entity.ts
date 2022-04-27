@@ -1,5 +1,5 @@
 import { Item } from './item.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 @Entity()
 export class ImageItem {
   @PrimaryGeneratedColumn('uuid')
