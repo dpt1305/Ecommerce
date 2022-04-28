@@ -1,3 +1,7 @@
+import { Item } from './entities/item.entity';
+import { ImageItem } from './entities/image-item.entity';
+import { ImageItemRepository } from './image-item.repository';
+import { Category } from './../categories/entities/category.entity';
 import { CategoriesService } from './../categories/categories.service';
 import { ItemsRepository } from './items.repository';
 import { ApiTags, ApiBody, ApiConsumes } from '@nestjs/swagger';
@@ -12,29 +16,62 @@ export class ItemsService {
     private categoriesService: CategoriesService,
     @InjectRepository(ItemsRepository)
     private itemsRepository: ItemsRepository,
+    @InjectRepository(ImageItemRepository)
+    private imageItemRepository: ImageItemRepository,
   ) {}
   async create(createItemDto: CreateItemDto, categoryId: string, files: any) {
-    const category = this.categoriesService.findOne(categoryId);
+    const category = await this.categoriesService.findOne(categoryId);
+
     const newItem = await this.itemsRepository.create({
       ...createItemDto,
+      avatar: files.avatar[0].path,
+      category,
     });
     await this.itemsRepository.save(newItem);
+
+    files.images.forEach(async (element, index) => {
+      const newImageItem = await this.imageItemRepository.create({
+        url: element.path,
+        item: newItem,
+      });
+      await this.imageItemRepository.save(newImageItem);
+    });
+
     return newItem;
   }
 
-  findAll() {
-    return `This action returns all items`;
+  async findAll() {
+    return await this.itemsRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} item`;
+  async findOne(id: string) {
+    return await this.itemsRepository.find({ id });
   }
 
-  update(id: number, updateItemDto: UpdateItemDto) {
-    return `This action updates a #${id} item`;
+  async update(id: string, updateItemDto: UpdateItemDto) {
+    const item = await this.itemsRepository.findOne({ id });
+    const update = { ...item, ...updateItemDto };
+    await this.itemsRepository.save(update);
+    return update;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} item`;
+  async remove(id: string) {
+    try {
+      await this.itemsRepository
+        .createQueryBuilder()
+        .delete()
+        .from(ImageItem)
+        .where('item = :id', { id })
+        .execute();
+      await this.itemsRepository
+        .createQueryBuilder()
+        .delete()
+        .from(Item)
+        .where('id = :id', { id })
+        .execute();
+      return 'Remove successfully.';
+    } catch (error) {
+      throw new Error('Can not delete.');
+    }
   }
 }

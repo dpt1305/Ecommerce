@@ -26,7 +26,7 @@ import {
 export class ItemsController {
   constructor(private readonly itemsService: ItemsService) {}
 
-  @Post()
+  @Post(':id')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileFieldsInterceptor(
@@ -56,6 +56,9 @@ export class ItemsController {
     schema: {
       type: 'object',
       properties: {
+        // categoryId: {
+        //   type: 'string',
+        // },
         images: {
           type: 'array',
           items: {
@@ -87,8 +90,8 @@ export class ItemsController {
           format: 'binary',
           // },
         },
-        descript: {
-          type: 'number',
+        description: {
+          type: 'string',
         },
         status: {
           type: 'string',
@@ -98,9 +101,10 @@ export class ItemsController {
   })
   create(
     @Body() createItemDto: CreateItemDto,
-    categoryId: string,
-    @UploadedFiles() files: {
-      avatar?: Express.Multer.File[];
+    @Param('id') categoryId: string,
+    @UploadedFiles()
+    files: {
+      avatar?: Express.Multer.File;
       images?: Express.Multer.File[];
     },
   ) {
@@ -114,16 +118,16 @@ export class ItemsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.itemsService.findOne(+id);
+    return this.itemsService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto) {
-    return this.itemsService.update(+id, updateItemDto);
+    return this.itemsService.update(id, updateItemDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.itemsService.remove(+id);
+    return this.itemsService.remove(id);
   }
 }

@@ -44,9 +44,9 @@ export class CreateItemDto {
   //     format: 'binary',
   //   },
   // })
-  avatar: string;
+  // avatar: string;
 
-  @IsInt()
+  @IsNumberString()
   @IsNotEmpty()
   @ApiProperty()
   quantity: number;

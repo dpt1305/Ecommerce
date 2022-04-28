@@ -30,6 +30,5 @@ export class Category {
     (type) => CategoryBanner,
     (categoryBanner) => categoryBanner.category,
   )
-  // @JoinColumn({ referencedColumnName: 'categoryId' })
   categoryBanner: CategoryBanner[];
 }

@@ -63,7 +63,7 @@ export class CategoriesService {
         .createQueryBuilder()
         .delete()
         .from(CategoryBanner)
-        .where('categoryId = :id', { id })
+        .where('category = :id', { id })
         .execute();
       const result = await this.categoriesRepository
         .createQueryBuilder()
