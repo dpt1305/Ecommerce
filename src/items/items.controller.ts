@@ -11,6 +11,7 @@ import {
   Param,
   Delete,
   UploadedFiles,
+  UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { ItemsService } from './items.service';
@@ -19,6 +20,7 @@ import { UpdateItemDto } from './dto/update-item.dto';
 import {
   FileFieldsInterceptor,
   FilesInterceptor,
+  FileInterceptor,
 } from '@nestjs/platform-express';
 // import { ApiTags, ApiConsumes}
 @ApiTags('Items')
@@ -121,6 +123,43 @@ export class ItemsController {
     return this.itemsService.findOne(id);
   }
 
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './avatar',
+        filename: function (req, file, cb) {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(null, uniqueSuffix + '-' + file.originalname);
+        },
+      }),
+      fileFilter: function (req, file, callback) {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+          return callback(new Error('Only image files are allowed!'), false);
+        }
+        callback(null, true);
+      },
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @Patch('/avatar/:id')
+  updateAvatar(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.itemsService.updateAvatar(id, file);
+  }
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto) {
     return this.itemsService.update(id, updateItemDto);

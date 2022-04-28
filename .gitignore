@@ -1,5 +1,6 @@
 /src/sendmail
 /files
+/avatar
 # compiled output
 /dist
 /node_modules

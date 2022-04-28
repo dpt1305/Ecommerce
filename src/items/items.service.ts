@@ -9,6 +9,9 @@ import { Injectable } from '@nestjs/common';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as fs from 'fs-extra';
+import { diskStorage } from 'multer';
+
 
 @Injectable()
 export class ItemsService {
@@ -54,7 +57,18 @@ export class ItemsService {
     await this.itemsRepository.save(update);
     return update;
   }
+  async updateAvatar(id: string, file: Express.Multer.File) {
+    const item = await this.itemsRepository.findOne({ id });
+    console.log(item, file);
 
+    fs.remove(item.avatar, async (err) => {
+      if (err) throw new Error('Can not update avatar');
+      item.avatar = file.path;
+
+      await this.itemsRepository.save(item);
+      return item;
+    });
+  }
   async remove(id: string) {
     try {
       await this.itemsRepository
