@@ -13,6 +13,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { UploadsModule } from './uploads/uploads.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ItemsModule } from './items/items.module';
+import { FlashsalesModule } from './flashsales/flashsales.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -53,6 +54,7 @@ import { ItemsModule } from './items/items.module';
     NestjsFormDataModule,
     UploadsModule,
     ItemsModule,
+    FlashsalesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
