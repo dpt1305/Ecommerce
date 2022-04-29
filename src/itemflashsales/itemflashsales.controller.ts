@@ -1,4 +1,9 @@
-import { Controller } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { Controller, Post } from '@nestjs/common';
 
 @Controller('itemflashsales')
-export class ItemflashsalesController {}
+@ApiTags('Item Flash Sale')
+export class ItemflashsalesController {
+  // @Post()
+  // create()
+}
