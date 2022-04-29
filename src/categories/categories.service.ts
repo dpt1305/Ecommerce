@@ -6,7 +6,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { CreateCategoryBannerDto } from './dto/create-category-banner.dto';
 @Injectable()
 export class CategoriesService {
   constructor(
@@ -48,7 +47,6 @@ export class CategoriesService {
 
   async update(id: string, updateCategoryDto: UpdateCategoryDto) {
     console.log(updateCategoryDto);
-    
     const result = await this.categoriesRepository.save({
       id,
       ...updateCategoryDto,

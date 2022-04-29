@@ -1,3 +1,4 @@
+import { DecreaseItemDto } from './dto/decrease-item.dto';
 import { ItemsRepository } from './items.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApiConsumes, ApiTags, ApiBody } from '@nestjs/swagger';
@@ -123,8 +124,10 @@ export class ItemsController {
     return this.itemsService.findOne(id);
   }
 
+  @ApiConsumes('multipart/form-data')
+  @Patch(':id')
   @UseInterceptors(
-    FileInterceptor('file', {
+    FileInterceptor('itemAvatar', {
       storage: diskStorage({
         destination: './avatar',
         filename: function (req, file, cb) {
@@ -141,32 +144,27 @@ export class ItemsController {
       },
     }),
   )
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-        },
-      },
-    },
-  })
-  @Patch('/avatar/:id')
-  updateAvatar(
+  update(
     @Param('id') id: string,
-    @UploadedFile() file: Express.Multer.File,
+    @Body() updateItemDto: UpdateItemDto,
+    @UploadedFile() itemAvatar: Express.Multer.File,
   ) {
-    return this.itemsService.updateAvatar(id, file);
-  }
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto) {
-    return this.itemsService.update(id, updateItemDto);
+    return this.itemsService.update(id, updateItemDto, itemAvatar);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.itemsService.remove(id);
+  }
+
+  @Patch('/order/:id')
+  // @ApiConsumes('multipart/form-data')
+  decreaseItemQuantity(
+    @Param('id') id: string,
+    @Body() decreaseItemDto: DecreaseItemDto,
+  ) {
+    console.log(decreaseItemDto);
+
+    return this.itemsService.decreaseItemQuantity(id, decreaseItemDto);
   }
 }

@@ -1,3 +1,5 @@
+import { IsOptional } from 'class-validator';
+import { DecreaseItemDto } from './dto/decrease-item.dto';
 import { Item } from './entities/item.entity';
 import { ImageItem } from './entities/image-item.entity';
 import { ImageItemRepository } from './image-item.repository';
@@ -5,7 +7,11 @@ import { Category } from './../categories/entities/category.entity';
 import { CategoriesService } from './../categories/categories.service';
 import { ItemsRepository } from './items.repository';
 import { ApiTags, ApiBody, ApiConsumes } from '@nestjs/swagger';
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -48,25 +54,24 @@ export class ItemsService {
   }
 
   async findOne(id: string) {
-    return await this.itemsRepository.find({ id });
+    const item = await this.itemsRepository.findOne({ id });
+    if (!item) throw new NotFoundException('Not found item');
+    return item;
   }
 
-  async update(id: string, updateItemDto: UpdateItemDto) {
+  async update(
+    id: string,
+    updateItemDto: UpdateItemDto,
+    file: Express.Multer.File,
+  ) {
     const item = await this.itemsRepository.findOne({ id });
-    const update = { ...item, ...updateItemDto };
-    await this.itemsRepository.save(update);
-    return update;
-  }
-  async updateAvatar(id: string, file: Express.Multer.File) {
-    const item = await this.itemsRepository.findOne({ id });
-    console.log(item, file);
 
     fs.remove(item.avatar, async (err) => {
       if (err) throw new Error('Can not update avatar');
-      item.avatar = file.path;
 
-      await this.itemsRepository.save(item);
-      return item;
+      const update = { ...item, ...updateItemDto, avatar: file.path };
+      await this.itemsRepository.save(update);
+      return update;
     });
   }
   async remove(id: string) {
@@ -87,5 +92,19 @@ export class ItemsService {
     } catch (error) {
       throw new Error('Can not delete.');
     }
+  }
+
+  async decreaseItemQuantity(id: string, decreaseItemDto: DecreaseItemDto) {
+    const item = await this.findOne(id);
+
+    const { orderNumber } = decreaseItemDto;
+
+    if (item.quantity < orderNumber) {
+      throw new BadRequestException(
+        'Order number is bigger than quantity of item',
+      );
+    }
+    item.quantity -= orderNumber;
+    return await this.itemsRepository.save(item);
   }
 }

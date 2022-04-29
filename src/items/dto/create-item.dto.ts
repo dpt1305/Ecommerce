@@ -64,4 +64,7 @@ export class CreateItemDto {
   @ApiProperty({ enum: ItemStatus })
   @IsOptional()
   status: ItemStatus;
+
+  @ApiProperty({ type: 'string', format: 'binary' })
+  itemAvatar: Express.Multer.File;
 }
