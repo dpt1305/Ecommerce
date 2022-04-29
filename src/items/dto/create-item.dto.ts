@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { ItemStatus } from './../entities/item.entity';
 import { Category } from './../../categories/entities/category.entity';
 import {
@@ -21,17 +22,20 @@ export class CreateItemDto {
   barcode: string;
 
   @IsNumberString()
+  @Type(() => Number)
   @IsNotEmpty()
   @ApiProperty()
   importPrice: number;
 
   @IsNumberString()
   @IsNotEmpty()
+  @Type(() => Number)
   @ApiProperty()
   price: number;
 
   @IsNumberString()
   @IsNotEmpty()
+  @Type(() => Number)
   @ApiProperty()
   weight: number;
 
@@ -48,6 +52,7 @@ export class CreateItemDto {
 
   @IsNumberString()
   @IsNotEmpty()
+  @Type(() => Number)
   @ApiProperty()
   quantity: number;
 
