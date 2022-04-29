@@ -74,6 +74,7 @@ export class ItemsService {
       return update;
     });
   }
+
   async remove(id: string) {
     try {
       await this.itemsRepository
