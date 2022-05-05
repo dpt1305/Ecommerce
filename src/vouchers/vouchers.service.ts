@@ -1,26 +1,56 @@
+import { VouchersRepository } from './vouchers.repository';
 import { Injectable } from '@nestjs/common';
 import { CreateVoucherDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
-
+import { NotFoundException, BadRequestException } from '@nestjs/common';
 @Injectable()
 export class VouchersService {
-  create(createVoucherDto: CreateVoucherDto) {
-    return 'This action adds a new voucher';
+  constructor(private vouchersRepository: VouchersRepository) {}
+  async create(createVoucherDto: CreateVoucherDto) {
+    try {
+      const voucher = await this.vouchersRepository.create({
+        ...createVoucherDto,
+      });
+      return this.vouchersRepository.save(voucher);
+    } catch (error) {
+      throw new BadRequestException();
+    }
   }
 
-  findAll() {
-    return `This action returns all vouchers`;
+  async findAll() {
+    try {
+      return await this.vouchersRepository.find();
+    } catch (error) {
+      throw new NotFoundException();
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} voucher`;
+  async findOne(id: string) {
+    try {
+      return await this.vouchersRepository.findOne({ id });
+    } catch (error) {
+      throw new NotFoundException();
+    }
+  }
+  
+  async update(id: string, updateVoucherDto: UpdateVoucherDto) {
+    try {
+      const voucher = await this.findOne(id);
+      console.log(voucher);
+      return await this.vouchersRepository.save({
+        ...voucher,
+        ...updateVoucherDto,
+      });
+    } catch (error) {
+      throw new BadRequestException();
+    }
   }
 
-  update(id: number, updateVoucherDto: UpdateVoucherDto) {
-    return `This action updates a #${id} voucher`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} voucher`;
+  async remove(id: string) {
+    const result = await this.vouchersRepository.delete({ id });
+    if (result) return `Delete voucher with id: ${id}`;
+    else {
+      throw new NotFoundException();
+    }
   }
 }
