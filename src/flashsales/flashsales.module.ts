@@ -9,5 +9,6 @@ import { FlashsalesController } from './flashsales.controller';
   controllers: [FlashsalesController],
   providers: [FlashsalesService],
   imports: [TypeOrmModule.forFeature([FlashsalesRepository])],
+  exports: [FlashsalesService],
 })
 export class FlashsalesModule {}

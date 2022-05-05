@@ -1,3 +1,4 @@
+import { ItemFlashsale } from './../../item-flashsales/entities/item-flashsale.entity';
 import { ImageItem } from './image-item.entity';
 import {
   Entity,
@@ -68,4 +69,7 @@ export class Item {
 
   @OneToMany(() => ImageItem, (imageItem) => imageItem.item)
   imageItem: ImageItem;
+
+  @OneToMany(() => ItemFlashsale, (itemFlashsale) => itemFlashsale.item)
+  itemFlashsale: ItemFlashsale;
 }

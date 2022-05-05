@@ -15,5 +15,6 @@ import { Item } from './entities/item.entity';
     TypeOrmModule.forFeature([ImageItemRepository]),
     CategoriesModule,
   ],
+  exports: [ItemsService],
 })
 export class ItemsModule {}

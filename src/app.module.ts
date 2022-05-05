@@ -14,7 +14,8 @@ import { UploadsModule } from './uploads/uploads.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ItemsModule } from './items/items.module';
 import { FlashsalesModule } from './flashsales/flashsales.module';
-import { ItemflashsalesModule } from './itemflashsales/itemflashsales.module';
+import { ItemFlashsalesModule } from './item-flashsales/item-flashsales.module';
+import { VouchersModule } from './vouchers/vouchers.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -56,7 +57,8 @@ import { ItemflashsalesModule } from './itemflashsales/itemflashsales.module';
     UploadsModule,
     ItemsModule,
     FlashsalesModule,
-    ItemflashsalesModule,
+    ItemFlashsalesModule,
+    VouchersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
