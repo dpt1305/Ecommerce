@@ -11,26 +11,33 @@ export class UsersService {
     @InjectRepository(UsersRepository)
     private usersRepository: UsersRepository,
   ) {}
-  create(createUserDto: CreateUserDto): Promise<User> {
-    return this.usersRepository.createUser(createUserDto);
+  create(createUserDto: CreateUserDto) {
+    return 'need fixing';
+    // return this.usersRepository.createUser(createUserDto);
   }
 
   findAll() {
-    return this.usersRepository.findAll();
+    return 'need fixing';
+
+    // return this.usersRepository.findAll();
   }
 
-  findOne(id: string): Promise<User> {
-    return this.usersRepository.findById(id);
+  findOne(id: string) {
+    return 'need fixing';
+    // return this.usersRepository.findById(id);
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {
-    return this.usersRepository.updateInfoUser(id, updateUserDto);
+    return 'need fixing';
+    // return this.usersRepository.updateInfoUser(id, updateUserDto);
   }
 
   remove(id: string) {
-    return this.usersRepository.deleteById(id);
+    return 'need fixing';
+    // return this.usersRepository.deleteById(id);
   }
   findByEmail(email: string) {
-    return this.usersRepository.findByEmail(email);
+    return 'need fixing';
+    // return this.usersRepository.findByEmail(email);
   }
 }

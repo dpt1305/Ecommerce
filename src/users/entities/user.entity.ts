@@ -11,29 +11,32 @@ export enum Role {
   Admin,
   User,
 }
-
+export class AddressShipping {
+  name: string;
+  phone: string;
+  address: string;
+}
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column('text')
   name: string;
 
-  @Column()
+  @Column('text')
   phone: string;
 
-  @Column()
-  // { unique: true }
+  @Column('text')
   email: string;
 
-  @Column()
+  @Column('text')
   password: string;
 
   @Column('date')
   birthday: Date;
 
-  @Column()
+  @Column('text')
   avatar: string;
 
   @Column({
@@ -42,11 +45,15 @@ export class User {
     default: Role.User,
   })
   role: Role;
-  @Column()
-  address: string;
 
-  @Column()
+  // @Column()
+  // address: string;
+
+  @Column({ type: 'boolean', default: false })
   verified: boolean;
+
+  @Column('json', { array: true })
+  address: string[];
 
   @CreateDateColumn({
     type: 'timestamp',

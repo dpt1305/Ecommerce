@@ -25,19 +25,19 @@ export class AuthController {
 
   @Post('signup')
   async signUp(@Body() createUserDto: CreateUserDto) {
-    const account = await this.usersService.create(createUserDto);
-    return this.authService.verifyEmail(account.email, account.name);
+    // const account = await this.usersService.create(createUserDto);
+    // return this.authService.verifyEmail(account.email, account.name);
   }
 
   @Post('signin')
   signIn(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.signIn(createAuthDto);
+    // return this.authService.signIn(createAuthDto);
   }
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
   @Get('test')
   test() {
-    return 'this is test for authen';
+    // return 'this is test for authen';
   }
   // @Get(':id')
   // findOne(@Param('id') id: string) {

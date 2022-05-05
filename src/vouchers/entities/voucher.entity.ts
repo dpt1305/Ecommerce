@@ -36,4 +36,7 @@ export class Voucher {
 
   @Column('timestamp')
   endTime: Date;
+
+  // @OneToMany()
+  // order: 
 }
