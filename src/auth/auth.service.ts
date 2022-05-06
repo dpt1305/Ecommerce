@@ -6,6 +6,8 @@ import { UpdateAuthDto } from './dto/update-auth.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { sign, verify } from 'jsonwebtoken';
+import * as speakeasy from 'speakeasy';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -14,7 +16,20 @@ export class AuthService {
     private sendmailService: SendmailService,
   ) {}
   async generateOTP(secret) {
-    
+    const token = speakeasy.totp({
+      secret: secret,
+      encoding: 'base32',
+    });
+    return token;
+  }
+  async verifyOTP(secret, token) {
+    const check = speakeasy.totp.verify({
+      secret: secret,
+      encoding: 'base32',
+      token,
+      window: 4,
+    });
+    return check;
   }
   // async signIn(createAuthDto: CreateAuthDto) {
   //   const { email, password } = createAuthDto;

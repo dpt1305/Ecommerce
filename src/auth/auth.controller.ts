@@ -8,9 +8,12 @@ import {
   Post,
   Body,
   Patch,
+  Query,
   Param,
   Delete,
   UseGuards,
+  NotAcceptableException,
+  BadRequestException,
 } from '@nestjs/common';
 import { FormDataRequest } from 'nestjs-form-data';
 import { AuthService } from './auth.service';
@@ -33,22 +36,29 @@ export class AuthController {
   @Post('signup')
   async signUp(@Body() createUserDto: CreateUserDto) {
     const account = await this.usersService.create(createUserDto);
-    console.log(account.email, account.id);
-    const token = speakeasy.totp({
-      secret: account.id,
-      encoding: 'base32',
-    });
-    console.log(token);
-    const tokenValidates = speakeasy.totp.verify({
-      secret: account.id,
-      encoding: 'base32',
-      token: token,
-      window: 4,
-    });
-    console.log(tokenValidates);
-    
+    const token = await this.authService.generateOTP(account.id);
+
+    const result = await this.authService.verifyOTP(account.id, token);
+    console.log(result);
+
     this.sendmailService.sendVerifiedEmail(account.email, token);
-    // return this.authService.verifyEmail(account.email, account.name);
+    return account;
+  }
+
+  @Get('verifyemail/?')
+  async verifyEmail(@Query('email') email: string, @Query('otp') otp: string) {
+    try {
+      const user = await this.usersService.findByEmail(email);
+      const result = await this.authService.verifyOTP(user.id, otp);
+
+      if (result) {
+        await this.usersService.verifyEmail(user.id);
+        return `Verify email successfully.`;
+      }
+      throw new BadRequestException('OTP is incorrect.');
+    } catch (error) {
+      throw new BadRequestException('OTP is incorrect.');
+    }
   }
 
   @Post('signin')

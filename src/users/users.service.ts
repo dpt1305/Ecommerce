@@ -47,8 +47,15 @@ export class UsersService {
   async remove(id: string) {
     return await this.usersRepository.delete({ id });
   }
-  findByEmail(email: string) {
-    return 'need fixing';
+  async findByEmail(email: string) {
+    return await this.usersRepository.findOne({ email });
     // return this.usersRepository.findByEmail(email);
+  }
+  async verifyEmail(id: string) {
+    const user =  await this.findOne(id);
+    return await this.usersRepository.save({
+      ...user,
+      verified: true,
+    });
   }
 }
