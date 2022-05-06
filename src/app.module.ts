@@ -32,20 +32,21 @@ import { VouchersModule } from './vouchers/vouchers.module';
       transport: {
         host: 'smtp.gmail.com',
         port: 587,
-        ignoreTLS: true,
+        service: 'gmail',
+        ignoreTLS: false,
         secure: false,
         auth: {
-          user: process.env.USER,
-          pass: process.env.PASSWORD,
+          user: 'bot.sendmail.99@gmail.com',
+          pass: 'Tung99.123',
         },
+      },
+      defaults: {
+        from: '"Ecommerce" <tungplatin@gmail.com>',
       },
     }),
     ConfigModule.forRoot({
       envFilePath: ['.env'],
       isGlobal: true,
-    }),
-    SendGridModule.forRoot({
-      apikey: process.env.SENDGRID_API_KEY,
     }),
     MulterModule.register({
       dest: './files',

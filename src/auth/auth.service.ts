@@ -13,6 +13,9 @@ export class AuthService {
     private jwtService: JwtService,
     private sendmailService: SendmailService,
   ) {}
+  async generateOTP(secret) {
+    
+  }
   // async signIn(createAuthDto: CreateAuthDto) {
   //   const { email, password } = createAuthDto;
   //   const account = await this.usersService.findByEmail(email);

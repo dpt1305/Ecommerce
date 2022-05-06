@@ -7,9 +7,9 @@ import {
 } from 'typeorm';
 
 export enum Role {
-  SuperAdmin,
-  Admin,
-  User,
+  SuperAdmin = 'SuperAdmin',
+  Admin = 'Admin',
+  User = 'User',
 }
 export class AddressShipping {
   name: string;
@@ -24,7 +24,7 @@ export class User {
   @Column('text')
   name: string;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   phone: string;
 
   @Column('text')
@@ -33,10 +33,10 @@ export class User {
   @Column('text')
   password: string;
 
-  @Column('date')
+  @Column('date', { nullable: true })
   birthday: Date;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   avatar: string;
 
   @Column({
@@ -52,7 +52,7 @@ export class User {
   @Column({ type: 'boolean', default: false })
   verified: boolean;
 
-  @Column('json', { array: true })
+  @Column('text', { array: true, nullable: false })
   address: string[];
 
   @CreateDateColumn({

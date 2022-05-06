@@ -11,30 +11,41 @@ export class UsersService {
     @InjectRepository(UsersRepository)
     private usersRepository: UsersRepository,
   ) {}
-  create(createUserDto: CreateUserDto) {
-    return 'need fixing';
-    // return this.usersRepository.createUser(createUserDto);
+  async create(createUserDto: CreateUserDto) {
+    const user = await this.usersRepository.create({
+      ...createUserDto,
+      // avatar: avatar.path,
+    });
+
+    return await this.usersRepository.save(user);
   }
 
-  findAll() {
-    return 'need fixing';
-
-    // return this.usersRepository.findAll();
+  async findAll() {
+    const users = await this.usersRepository.find();
+    return users;
   }
 
-  findOne(id: string) {
-    return 'need fixing';
-    // return this.usersRepository.findById(id);
+  async findOne(id: string) {
+    return await this.usersRepository.findOne({ id });
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    return 'need fixing';
-    // return this.usersRepository.updateInfoUser(id, updateUserDto);
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    avatar: Express.Multer.File,
+  ) {
+    const user = await this.findOne( id );
+    const newUser = await this.usersRepository.save({
+      ...user,
+      ...updateUserDto,
+      avatar: avatar ? avatar.path : user.avatar,
+    });
+
+    return await this.usersRepository.save(newUser);
   }
 
-  remove(id: string) {
-    return 'need fixing';
-    // return this.usersRepository.deleteById(id);
+  async remove(id: string) {
+    return await this.usersRepository.delete({ id });
   }
   findByEmail(email: string) {
     return 'need fixing';

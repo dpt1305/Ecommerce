@@ -1,3 +1,5 @@
+import { Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateUserDto } from './create-user.dto';
 import { Role } from './../entities/user.entity';
@@ -9,21 +11,33 @@ import {
   IsDate,
   IsBooleanString,
   IsNotEmpty,
+  IsOptional,
+  IsArray,
 } from 'class-validator';
-
+// import { Type}
 export class UpdateUserDto {
+  @ApiProperty()
+  @IsOptional()
   @IsString()
   name?: string;
 
-  @IsMobilePhone('vn_VN')
+  @ApiProperty()
+  @IsOptional()
+  @IsMobilePhone('vi-VN')
   phone?: string;
 
+  @ApiProperty()
   @IsDate()
+  @IsOptional()
+  @Type(() => Date)
   birthday?: Date;
 
-  @IsString()
+  @ApiProperty({ type: 'string', format: 'binary' })
+  @IsOptional()
   avatar?: string;
 
-  @IsString()
-  address?: string;
+  @ApiProperty()
+  @IsArray()
+  @IsOptional()
+  address?: string[];
 }

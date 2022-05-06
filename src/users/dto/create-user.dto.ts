@@ -7,24 +7,30 @@ import {
   IsEnum,
   IsDate,
   IsBooleanString,
+  IsArray,
+  IsOptional,
   IsNotEmpty,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({ type: String, required: true })
   name: string;
 
   @ApiProperty({ type: String })
+  @IsOptional()
   @IsMobilePhone('vi-VN')
-  phone: string;
+  phone?: string;
 
   @IsEmail()
+  @IsOptional()
   @ApiProperty({ type: String })
   @IsNotEmpty()
   email: string;
 
+  @IsOptional()
   @IsString()
   @ApiProperty({ type: String })
   @IsNotEmpty()
@@ -32,18 +38,21 @@ export class CreateUserDto {
 
   @IsDate()
   @ApiProperty({ type: 'string', format: 'date' })
+  @IsOptional()
   @Type(() => Date)
-  birthday: Date;
+  birthday?: Date;
 
+  @IsOptional()
   @ApiProperty({ type: 'string', format: 'binary' })
-  avatar: string;
+  avatar?: string;
 
   @IsEnum(Role)
+  @IsOptional()
   @ApiProperty({ enum: Role, default: Role.User })
-  @IsNotEmpty()
-  role: Role;
+  role?: Role;
 
-  @ApiProperty({ type: 'array' })
-  @IsString()
-  address: string;
+  @ApiProperty()
+  @IsOptional()
+  @IsArray()
+  address: [string];
 }
