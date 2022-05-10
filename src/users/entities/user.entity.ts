@@ -1,9 +1,11 @@
+import { Order } from './../../orders/entities/order.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 export enum Role {
@@ -67,4 +69,7 @@ export class User {
     onUpdate: 'CURRENT_TIMESTAMP(6)',
   })
   modified_at: Date;
+
+  @OneToMany(() => Order, (order) => order.user)
+  order: Order;
 }

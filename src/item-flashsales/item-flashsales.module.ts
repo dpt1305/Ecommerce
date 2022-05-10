@@ -1,3 +1,4 @@
+import { OrdersModule } from './../orders/orders.module';
 import { FlashsalesModule } from './../flashsales/flashsales.module';
 import { ItemsModule } from './../items/items.module';
 import { ItemFlashsalesRepository } from './item-flashsales.repository';
@@ -13,6 +14,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     TypeOrmModule.forFeature([ItemFlashsalesRepository]),
     ItemsModule,
     FlashsalesModule,
+    OrdersModule,
   ],
 })
 export class ItemFlashsalesModule {}

@@ -16,6 +16,7 @@ import { ItemsModule } from './items/items.module';
 import { FlashsalesModule } from './flashsales/flashsales.module';
 import { ItemFlashsalesModule } from './item-flashsales/item-flashsales.module';
 import { VouchersModule } from './vouchers/vouchers.module';
+import { OrdersModule } from './orders/orders.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -60,6 +61,7 @@ import { VouchersModule } from './vouchers/vouchers.module';
     FlashsalesModule,
     ItemFlashsalesModule,
     VouchersModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

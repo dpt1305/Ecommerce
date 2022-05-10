@@ -1,5 +1,6 @@
+import { Order } from './../../orders/entities/order.entity';
 import { IsString, IsNumber, IsInt, IsDate } from 'class-validator';
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 export enum VoucherType {
   'Discount' = 'Discount',
@@ -37,6 +38,6 @@ export class Voucher {
   @Column('timestamp')
   endTime: Date;
 
-  // @OneToMany()
-  // order: 
+  @OneToMany(() => Order, (order) => order.voucher)
+  order: Order;
 }
