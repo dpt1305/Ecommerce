@@ -1,1 +1,5 @@
-export class CreateOrderDto {}
+import { IsString } from 'class-validator';
+export class CreateOrderDto {
+  // @IsString()
+
+}

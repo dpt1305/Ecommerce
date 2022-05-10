@@ -1,3 +1,4 @@
+import { OrderDetail } from './order-detail.entity';
 import { Voucher } from './../../vouchers/entities/voucher.entity';
 import { User } from './../../users/entities/user.entity';
 import {
@@ -7,6 +8,7 @@ import {
   UpdateDateColumn,
   Column,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 
 export enum OrderStatus {
@@ -57,4 +59,7 @@ export class Order {
 
   @ManyToOne(() => Voucher, (voucher) => voucher.order)
   voucher: Voucher;
+
+  @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.order)
+  orderDetail: OrderDetail;
 }

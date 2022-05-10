@@ -1,3 +1,4 @@
+import { Order } from './order.entity';
 import { ItemFlashsale } from './../../item-flashsales/entities/item-flashsale.entity';
 import { Item } from './../../items/entities/item.entity';
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
@@ -17,4 +18,7 @@ export class OrderDetail {
 
   @ManyToOne(() => ItemFlashsale, (itemFlashsale) => itemFlashsale.orderDetail)
   itemFlashsale: ItemFlashsale;
+
+  @ManyToOne(() => Order, (order) => order.orderDetail)
+  order: Order;
 }
