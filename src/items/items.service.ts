@@ -1,3 +1,4 @@
+import { ItemFlashsale } from './../item-flashsales/entities/item-flashsale.entity';
 import { IsOptional } from 'class-validator';
 import { DecreaseItemDto } from './dto/decrease-item.dto';
 import { Item } from './entities/item.entity';
@@ -17,7 +18,7 @@ import { UpdateItemDto } from './dto/update-item.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as fs from 'fs-extra';
 import { diskStorage } from 'multer';
-
+import { getConnection } from 'typeorm';
 
 @Injectable()
 export class ItemsService {
@@ -107,5 +108,17 @@ export class ItemsService {
     }
     item.quantity -= orderNumber;
     return await this.itemsRepository.save(item);
+  }
+
+  async getRealPrice() {
+    const user = await getConnection()
+      .createQueryBuilder()
+      .select('item')
+      .addSelect('item.price*(1-item_flashsale.discount)', 'realPrice')
+      .from(ItemFlashsale, 'item_flashsale')
+      .innerJoin('item_flashsale.item', 'item')
+      .execute();
+
+    return user;
   }
 }

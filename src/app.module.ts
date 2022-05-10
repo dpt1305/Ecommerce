@@ -28,6 +28,7 @@ import { OrdersModule } from './orders/orders.module';
       database: 'ecommerce',
       autoLoadEntities: true,
       synchronize: true,
+      logging: true,
     }),
     MailerModule.forRoot({
       transport: {

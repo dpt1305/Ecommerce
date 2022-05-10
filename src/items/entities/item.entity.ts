@@ -33,6 +33,9 @@ export class Item {
   @Column('float')
   price: number;
 
+  // @Column('float')
+  // realPrice: number;
+
   @Column('float')
   weight: number;
 

@@ -4,6 +4,7 @@ import { Category } from './../../categories/entities/category.entity';
 import {
   IsString,
   IsNumberString,
+  IsNumber,
   IsNotEmpty,
   IsInt,
   IsEnum,
@@ -22,21 +23,18 @@ export class CreateItemDto {
   barcode: string;
 
   @IsNumberString()
-  @Type(() => Number)
+  @ApiProperty({ type: 'number', format: 'float' })
   @IsNotEmpty()
-  @ApiProperty()
   importPrice: number;
 
   @IsNumberString()
+  @ApiProperty({ type: 'number', format: 'float' })
   @IsNotEmpty()
-  @Type(() => Number)
-  @ApiProperty()
   price: number;
 
   @IsNumberString()
+  @ApiProperty({ type: 'number', format: 'float' })
   @IsNotEmpty()
-  @Type(() => Number)
-  @ApiProperty()
   weight: number;
 
   // @IsString()
@@ -51,9 +49,8 @@ export class CreateItemDto {
   // avatar: string;
 
   @IsNumberString()
+  @ApiProperty({ type: 'integer' })
   @IsNotEmpty()
-  @Type(() => Number)
-  @ApiProperty()
   quantity: number;
 
   @ApiProperty()
