@@ -21,21 +21,26 @@ export class ItemFlashsalesService {
     private itemFlashsalesRepository: ItemFlashsalesRepository,
   ) {}
   async create(createItemFlashsaleDto: CreateItemFlashsaleDto) {
-    try {
-      const flashsale = await this.flashsalesService.findOne(
-        createItemFlashsaleDto.flashsale,
-      );
-      const item = await this.itemsService.findOne(createItemFlashsaleDto.item);
+    const flashsale = await this.flashsalesService.findOne(
+      createItemFlashsaleDto.flashsale,
+    );
+    const item = await this.itemsService.findOne(createItemFlashsaleDto.item);
 
-      const itemFlashsale = await this.itemFlashsalesRepository.create({
-        ...createItemFlashsaleDto,
-        flashsale,
-        item,
-      });
-      return await this.itemFlashsalesRepository.save(itemFlashsale);
-    } catch (error) {
-      throw new RequestTimeoutException();
+    if (
+      createItemFlashsaleDto.quantity > item.quantity ||
+      createItemFlashsaleDto.quantity == 0
+    ) {
+      throw new BadRequestException('Quantity is not good.');
     }
+    const quantity = item.quantity - createItemFlashsaleDto.quantity;
+    await this.itemsService.update(item.id, { quantity }, null);
+
+    const itemFlashsale = await this.itemFlashsalesRepository.create({
+      ...createItemFlashsaleDto,
+      flashsale,
+      item,
+    });
+    return await this.itemFlashsalesRepository.save(itemFlashsale);
   }
 
   async findAll() {

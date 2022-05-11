@@ -67,13 +67,19 @@ export class ItemsService {
   ) {
     const item = await this.itemsRepository.findOne({ id });
 
-    fs.remove(item.avatar, async (err) => {
-      if (err) throw new Error('Can not update avatar');
+    if (item.avatar && file) {
+      fs.remove(item.avatar, async (err) => {
+        if (err) throw new Error('Can not update avatar');
 
-      const update = { ...item, ...updateItemDto, avatar: file.path };
-      await this.itemsRepository.save(update);
-      return update;
-    });
+        const update = { ...item, ...updateItemDto, avatar: file.path };
+        await this.itemsRepository.save(update);
+        return update;
+      });
+    }
+    const avatar = file ? file.path : item.avatar;
+    const update = { ...item, ...updateItemDto, avatar };
+    await this.itemsRepository.save(update);
+    return update;
   }
 
   async remove(id: string) {

@@ -7,6 +7,7 @@ import {
   Patch,
   Param,
   Delete,
+  RequestTimeoutException,
 } from '@nestjs/common';
 import { ItemFlashsalesService } from './item-flashsales.service';
 import { CreateItemFlashsaleDto } from './dto/create-item-flashsale.dto';
@@ -19,7 +20,11 @@ export class ItemFlashsalesController {
 
   @Post()
   create(@Body() createItemFlashsaleDto: CreateItemFlashsaleDto) {
-    return this.itemFlashsalesService.create(createItemFlashsaleDto);
+    try {
+      return this.itemFlashsalesService.create(createItemFlashsaleDto);
+    } catch (error) {
+      throw new RequestTimeoutException();
+    }
   }
 
   @Get()
