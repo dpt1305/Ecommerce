@@ -27,24 +27,6 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @ApiConsumes('multipart/form-data')
-  // @UseInterceptors(
-  //   FileInterceptor('avatar', {
-  //     storage: diskStorage({
-  //       destination: './files',
-  //       filename: function (req, file, cb) {
-  //         const uniqueSuffix =
-  //           Date.now() + '-' + Math.round(Math.random() * 1e9);
-  //         cb(null, uniqueSuffix + '-' + file.originalname);
-  //       },
-  //     }),
-  //     fileFilter: function (req, file, callback) {
-  //       if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-  //         return callback(new Error('Only image files are allowed!'), false);
-  //       }
-  //       callback(null, true);
-  //     },
-  //   }),
-  // )
   @Post()
   create(
     @Body() createUserDto: CreateUserDto,

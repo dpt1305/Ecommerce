@@ -1,3 +1,4 @@
+import { RolesGuard } from './authorization/roles.guard';
 import { UsersRepository } from './users/users.repository';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
@@ -17,6 +18,8 @@ import { FlashsalesModule } from './flashsales/flashsales.module';
 import { ItemFlashsalesModule } from './item-flashsales/item-flashsales.module';
 import { VouchersModule } from './vouchers/vouchers.module';
 import { OrdersModule } from './orders/orders.module';
+import { APP_GUARD } from '@nestjs/core';
+// RolesGuard
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -65,6 +68,12 @@ import { OrdersModule } from './orders/orders.module';
     OrdersModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}

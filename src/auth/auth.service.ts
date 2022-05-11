@@ -31,17 +31,17 @@ export class AuthService {
     });
     return check;
   }
-  // async signIn(createAuthDto: CreateAuthDto) {
-  //   const { email, password } = createAuthDto;
-  //   const account = await this.usersService.findByEmail(email);
-  //   const check = await bcrypt.compare(password, account.password);
-  //   if (!account || !check) {
-  //     return 'Email or password is incorrect';
-  //   }
-  //   const payload = account.email;
-  //   const access_token: string = await this.jwtService.sign({ payload });
-  //   return `jwt: ${access_token}`;
-  // }
+  async signIn(createAuthDto: CreateAuthDto) {
+    const { email, password } = createAuthDto;
+    const account = await this.usersService.findByEmail(email);
+    const check = await bcrypt.compare(password, account.password);
+    if (!account || !check) {
+      return 'Email or password is incorrect';
+    }
+    const payload = account.email;
+    const access_token: string = await this.jwtService.sign({ payload });
+    return `jwt: ${access_token}`;
+  }
 
   // async verifyEmail(email: string, name: string) {
   //   const token = await sign(

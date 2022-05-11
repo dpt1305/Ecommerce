@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  BaseEntity,
 } from 'typeorm';
 
 export enum Role {
@@ -19,11 +20,11 @@ export class AddressShipping {
   address: string;
 }
 @Entity()
-export class User {
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('text')
+  @Column('text', { unique: true })
   name: string;
 
   @Column('text', { nullable: true })

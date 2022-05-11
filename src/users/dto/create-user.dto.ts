@@ -14,7 +14,7 @@ import {
 import { Type } from 'class-transformer';
 export class CreateUserDto {
   @IsString()
-  @IsNotEmpty()
+  // @IsNotEmpty()
   @IsOptional()
   @ApiProperty({ type: String, required: true })
   name: string;
@@ -42,9 +42,9 @@ export class CreateUserDto {
   @Type(() => Date)
   birthday?: Date;
 
-  @IsOptional()
-  @ApiProperty({ type: 'string', format: 'binary' })
-  avatar?: string;
+  // @IsOptional()
+  // @ApiProperty({ type: 'string', format: 'binary' })
+  // avatar?: string;
 
   @IsEnum(Role)
   @IsOptional()

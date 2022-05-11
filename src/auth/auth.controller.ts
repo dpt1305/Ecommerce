@@ -1,3 +1,5 @@
+import { Role } from './../users/entities/user.entity';
+import { Roles } from './../authorization/roles.decorator';
 import { SendmailService } from './../sendmail/sendmail.service';
 import { CreateUserDto } from './../users/dto/create-user.dto';
 import { ApiTags, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
@@ -63,13 +65,14 @@ export class AuthController {
 
   @Post('signin')
   signIn(@Body() createAuthDto: CreateAuthDto) {
-    // return this.authService.signIn(createAuthDto);
+    return this.authService.signIn(createAuthDto);
   }
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
+  @Roles(Role.User)
   @Get('test')
   test() {
-    // return 'this is test for authen';
+    return 'this is test for authen';
   }
   // @Get(':id')
   // findOne(@Param('id') id: string) {
