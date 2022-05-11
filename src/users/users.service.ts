@@ -2,7 +2,7 @@ import { UsersRepository } from './users.repository';
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { InjectRepository } from '@nestjs/typeorm'; 
+import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 @Injectable()
@@ -41,7 +41,7 @@ export class UsersService {
     updateUserDto: UpdateUserDto,
     avatar: Express.Multer.File,
   ) {
-    const user = await this.findOne( id );
+    const user = await this.findOne(id);
     const newUser = await this.usersRepository.save({
       ...user,
       ...updateUserDto,

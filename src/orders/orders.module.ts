@@ -1,3 +1,5 @@
+import { VouchersModule } from './../vouchers/vouchers.module';
+import { UsersModule } from './../users/users.module';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { FlashsalesModule } from './../flashsales/flashsales.module';
 import { ItemFlashsalesModule } from './../item-flashsales/item-flashsales.module';
@@ -20,6 +22,8 @@ import { OrderDetailsService } from './order-details.service';
     ItemFlashsalesModule,
     FlashsalesModule,
     NestjsFormDataModule,
+    UsersModule,
+    VouchersModule,
   ],
 })
 export class OrdersModule {}

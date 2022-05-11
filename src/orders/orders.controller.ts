@@ -1,7 +1,16 @@
 import { FormDataRequest } from 'nestjs-form-data';
 import { OrderDetailsService } from './order-details.service';
 import { ApiTags, ApiConsumes } from '@nestjs/swagger';
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  BadRequestException,
+} from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CreateOrderDetailDto } from './dto/create-order-detail.dto';
@@ -16,12 +25,17 @@ export class OrdersController {
   ) {}
 
   @Post()
+  @ApiConsumes('multipart/form-data')
+  @FormDataRequest()
   create(@Body() createOrderDto: CreateOrderDto) {
-    return this.ordersService.create(createOrderDto);
+    try {
+      return this.ordersService.create(createOrderDto);
+      
+    } catch (error) {
+      throw new BadRequestException();
+    }
   }
   @Post('orderdetail')
-  // @FormDataRequest()
-  // @ApiConsumes('multipart/form-data')
   createOrderDetail(@Body() createOrderDetailDto: CreateOrderDetailDto) {
     return this.orderDetailsService.create(createOrderDetailDto);
   }
