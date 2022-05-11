@@ -32,7 +32,7 @@ export class OrdersController {
       return this.ordersService.create(createOrderDto);
       
     } catch (error) {
-      throw new BadRequestException();
+      throw new BadRequestException('Create order badly.');
     }
   }
   @Post('orderdetail')

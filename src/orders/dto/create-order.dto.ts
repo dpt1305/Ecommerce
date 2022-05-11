@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { OrderStatus } from './../entities/order.entity';
-import { IsString, IsNumber, IsEnum, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsEnum, IsOptional, IsNumberString } from 'class-validator';
 // ApiProperty
 export class CreateOrderDto {
   @IsString()
@@ -16,22 +16,22 @@ export class CreateOrderDto {
   @ApiProperty({ type: String })
   addressShipping: string;
 
-  @IsEnum({ enum: OrderStatus })
-  @IsOptional()
-  status: OrderStatus;
+  // @IsEnum({ enum: OrderStatus })
+  // @IsOptional()
+  // status: OrderStatus;
 
-  @IsNumber()
+  @IsNumberString()
   @IsOptional()
   @ApiProperty({ type: Number, required: false })
   shippingPrice: number;
 
-  @IsNumber()
-  @IsOptional()
-  @ApiProperty({ type: Number, required: false })
-  itemsPrice: number;
+  // @IsNumber()
+  // @IsOptional()
+  // @ApiProperty({ type: Number, required: false })
+  // itemsPrice: number;
 
-  @IsNumber()
-  @IsOptional()
-  @ApiProperty({ type: Number, required: false })
-  total: number;
+  // @IsNumber()
+  // @IsOptional()
+  // @ApiProperty({ type: Number, required: false })
+  // total: number;
 }

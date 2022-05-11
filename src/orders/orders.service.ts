@@ -1,3 +1,4 @@
+import { Voucher } from './../vouchers/entities/voucher.entity';
 import { OrderStatus } from './entities/order.entity';
 import { VouchersService } from './../vouchers/vouchers.service';
 import { UsersService } from './../users/users.service';
@@ -6,7 +7,7 @@ import { OrdersRepository } from './orders.repository';
 import { Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { getManager } from 'typeorm';
+import { getManager, getConnection } from 'typeorm';
 
 @Injectable()
 export class OrdersService {
@@ -19,22 +20,23 @@ export class OrdersService {
 
   async create(createOrderDto: CreateOrderDto) {
     const { voucherId, userId } = createOrderDto;
+    console.log(createOrderDto);
+    
     const user = await this.usersService.findOne(userId);
     console.log(user);
 
-    // const voucher = await this.get
-    //   .createQueryBuilder('voucher')
-    //   .from('voucher')
-    //   .where('id = :id', { id: voucherId });
-    // console.log(voucher);
+    const voucher = voucherId
+      ? await this.vouchersService.findOne(voucherId)
+      : null;
+    console.log(voucher);
 
-    // const order = await this.ordersRepository.create( {
-    //   ...createOrderDto,
-    //   user,
-    //   voucher: voucher ? voucher : null,
-    //   status: OrderStatus.Waiting,
-    // });
-    // console.log(order);
+    const order = await this.ordersRepository.create( {
+      ...createOrderDto,
+      user,
+      voucher,
+      status: OrderStatus.Waiting,
+    });
+    console.log(order);
   }
 
   findAll() {
