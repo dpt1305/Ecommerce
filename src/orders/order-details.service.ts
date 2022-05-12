@@ -20,9 +20,7 @@ export class OrderDetailsService {
     private ordersRepository: OrdersRepository,
     private itemsService: ItemsService,
     private itemFlashsalesService: ItemFlashsalesService,
-  ) // private ordersService: OrdersService,
-
-  {}
+  ) {}
   async create(createOrderDetailDto: CreateOrderDetailDto) {
   // "itemId": "81d18c6e-94d1-473a-999a-93ac4db9ff89",
   // "orderId": "45176329-71ec-435d-b067-54fef1b0e4c2",

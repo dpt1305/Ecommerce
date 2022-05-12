@@ -1,3 +1,4 @@
+import { Voucher, VoucherType } from './entities/voucher.entity';
 import { VouchersRepository } from './vouchers.repository';
 import { Injectable } from '@nestjs/common';
 import { CreateVoucherDto } from './dto/create-voucher.dto';
@@ -32,7 +33,7 @@ export class VouchersService {
       throw new NotFoundException();
     }
   }
-  
+
   async update(id: string, updateVoucherDto: UpdateVoucherDto) {
     try {
       const voucher = await this.findOne(id);
@@ -52,5 +53,29 @@ export class VouchersService {
     else {
       throw new NotFoundException();
     }
+  }
+  async findVoucherByCode(code: string) {
+    return await this.vouchersRepository.findOne({ code });
+  }
+
+  async applyVoucher(
+    voucher: Voucher,
+    itemsPrice: number,
+    shippingPrice: number,
+  ) {
+    if (voucher.quantity == 0 || itemsPrice <= voucher.min) {
+      throw new BadRequestException('Can not apply this voucher');
+    }
+
+    if(voucher.type === VoucherType.Shipping) {
+      const ship = (1 - voucher.discount) * shippingPrice;
+      shippingPrice = ship > voucher.max ? shippingPrice - voucher.max : ship;
+    }
+
+    if(voucher.type == VoucherType.Discount) {
+      const discount = (1 - voucher.discount) * itemsPrice;
+      itemsPrice = discount > voucher.max ? itemsPrice - voucher.max : discount;
+    }
+    return { itemsPrice, shippingPrice };
   }
 }

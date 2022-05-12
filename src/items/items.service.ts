@@ -116,12 +116,14 @@ export class ItemsService {
     return await this.itemsRepository.save(item);
   }
 
-  async getRealPrice(itemId: string) {
+  async getItemWithFlashsale(itemId: string) {
     const timeNow = new Date();
     const query = await getConnection()
       .createQueryBuilder()
       .select('item')
-      .addSelect('item_flashsale.id', 'item_flashsale')
+      .addSelect('item_flashsale')
+      .addSelect('flashsale')
+      .addSelect('item.price', 'price')
       .addSelect('item.price*(1-item_flashsale.discount)', 'realPrice')
       .from(ItemFlashsale, 'item_flashsale')
       .leftJoin('item_flashsale.item', 'item')
@@ -132,6 +134,6 @@ export class ItemsService {
       .orderBy('item_flashsale.discount', 'DESC')
       .limit(1)
       .execute();
-    return query;
+    return query[0];
   }
 }

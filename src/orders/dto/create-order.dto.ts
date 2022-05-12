@@ -25,7 +25,7 @@ export class CreateOrderDto {
   @IsString()
   @IsOptional()
   @ApiProperty({ type: String, required: false })
-  voucherId: string;
+  voucherCode: string;
 
   @IsString()
   @ApiProperty({ type: String })
