@@ -55,7 +55,9 @@ export class VouchersService {
     }
   }
   async findVoucherByCode(code: string) {
-    return await this.vouchersRepository.findOne({ code });
+    let voucher = await this.vouchersRepository.findOne({ code });
+    
+    return voucher;
   }
 
   async applyVoucher(
@@ -76,6 +78,11 @@ export class VouchersService {
       const discount = (1 - voucher.discount) * itemsPrice;
       itemsPrice = discount > voucher.max ? itemsPrice - voucher.max : discount;
     }
+    await this.vouchersRepository.save({
+      ...voucher,
+      quantity: voucher.quantity - 1,
+    });
+    
     return { itemsPrice, shippingPrice };
   }
 }

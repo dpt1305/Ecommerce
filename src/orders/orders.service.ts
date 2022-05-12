@@ -1,3 +1,5 @@
+import { OrderDetail } from './entities/order-detail.entity';
+import { OrderDetailsRepository } from './order-details.repository';
 import { ItemFlashsalesService } from './../item-flashsales/item-flashsales.service';
 import { ItemsService } from './../items/items.service';
 import { OrderDetailsService } from './order-details.service';
@@ -20,36 +22,61 @@ export class OrdersService {
   constructor(
     @InjectRepository(OrdersRepository)
     private ordersRepository: OrdersRepository,
+    @InjectRepository(OrderDetailsRepository)
+    private orderDetailsRepository: OrderDetailsRepository,
+
     private usersService: UsersService,
     private vouchersService: VouchersService,
     private orderDetailsService: OrderDetailsService,
     private itemsService: ItemsService,
     private itemFlashsalesService: ItemFlashsalesService,
   ) {}
+  /*{
+  "userId": "0187d7e5-537c-4b0a-bc40-0ab554a9beb3",
+  "voucherCode": "GIAM5K",
+  "addressShipping": "Hanoi, Vietnam",
+  "shippingPrice": 15,
+  "items": [
+    {
+        "itemId": "81d18c6e-94d1-473a-999a-93ac4db9ff89",
+        "quantity": 1
+    }
+  ]
+}
 
+   */
   async create(createOrderDto: CreateOrderDto) {
-    let { voucherCode, userId, items, shippingPrice } = createOrderDto;
+    let { voucherCode, userId, items, shippingPrice, addressShipping } =
+      createOrderDto;
     console.log(createOrderDto);
 
-    let user, voucher;
-    try {
-      user = await this.usersService.findOne(userId);
-      
-      voucher = voucherCode
-        ? await this.vouchersService.findVoucherByCode(voucherCode)
-        : null;
-    } catch (error) {
+    let user = await this.usersService.findOne(userId);
+    const voucher = voucherCode
+      ? await this.vouchersService.findVoucherByCode(voucherCode)
+      : null;
+    if (user === undefined || voucher === undefined) {
       throw new NotFoundException('Can not find information.');
     }
     console.log(user, voucher);
 
+    //# create order => get constraint
+    let order = await this.ordersRepository.save({
+      shippingPrice,
+      status: OrderStatus.Waiting,
+      user,
+      addressShipping,
+    });
+    console.log(order);
+    
     //# calculate  order.itemsPrice
     let itemsPrice = 0;
     for (let index = 0; index < items.length; index++) {
       const query = await this.itemsService.getItemWithFlashsale(
         items[index].itemId,
       );
-      const item = await this.itemsService.findOne(items[index].itemId);
+      console.log(query);
+
+      let item = await this.itemsService.findOne(items[index].itemId);
       console.log(query, 111111, item);
 
       //# check quantity
@@ -65,21 +92,40 @@ export class OrdersService {
         item,
         items[index].quantity,
         itemsPrice,
+        order,
       );
     }
     console.log(itemsPrice);
 
     //# apply voucher
-    // const voucher = voucherId
-    //   ? await this.vouchersService.findOne(voucherId)
-    //   : null;
-    // console.log(voucher);
-    await this.vouchersService.applyVoucher(voucher, itemsPrice, shippingPrice);
-    // const order = await this.ordersRepository.create({
-    //   ...createOrderDto,
-    //   user,
-    //   voucher,
-    //   status: OrderStatus.Waiting,
+    if (voucher) {
+      const { itemsPrice: newItemsPrice, shippingPrice: newShippingPrice } =
+        await this.vouchersService.applyVoucher(
+          voucher,
+          itemsPrice,
+          shippingPrice,
+        );
+      console.log(newItemsPrice, newShippingPrice);
+      await this.ordersRepository.save({
+        ...order,
+        voucher,
+        shippingPrice: newShippingPrice,
+        itemsPrice: newItemsPrice,
+        total: newShippingPrice + newItemsPrice,
+      });
+      console.log(order);
+    }
+    await this.ordersRepository.save({
+      ...order,
+      voucher: null,
+      itemsPrice,
+      total: shippingPrice + itemsPrice,
+    });
+    // console.log(order);
+
+    // //# save  OrderDetail
+    // items.forEach(async (element) => {
+    //   await this.createOrderDetail();
     // });
     // return await this.ordersRepository.save(order);
   }
@@ -100,51 +146,44 @@ export class OrdersService {
     }
   }
 
-  // item_flashsale_id: '67b0369f-384e-4035-b82a-a8f5cba6dc2b',
-  // item_flashsale_discount: 0.2,
-  // item_flashsale_quantity: 3,
-  // item_flashsale_flashsaleId: '06d8e80e-2a64-4433-a61e-f238d46545d8',
-  // item_flashsale_itemId: '81d18c6e-94d1-473a-999a-93ac4db9ff89',
-  // item_id: '81d18c6e-94d1-473a-999a-93ac4db9ff89',
-  // item_name: 'Ao nu',
-  // item_barcode: '1123423',
-  // item_importPrice: 3,
-  // price: 15,
-  // item_weight: 0.2,
-  // item_avatar: 'files/1652165733108-169181282-Ảnh trong VC.png',
-  // item_quantity: 20,
-  // item_description: 'This is ao nam',
-  // item_status: 'Active',
-  // item_created_at: 2022-05-10T06:55:33.121Z,
-  // item_modified_at: 2022-05-12T03:54:01.667Z,
-  // item_categoryId: 'c2d38d51-0f26-480c-ac45-2c17a3ffcfeb',
-  // flashsale_id: '06d8e80e-2a64-4433-a61e-f238d46545d8',
-  // flashsale_name: '12/05',
-  // flashsale_description: 'Sale to sale to',
-  // flashsale_startSale: 2022-05-12T03:30:00.000Z,
-  // flashsale_endSale: 2022-05-12T15:30:00.000Z,
-  // flashsale_flashSaleBanner: [],
-  // flashsale_created_at: 2022-05-12T03:17:39.568Z,
-  // flashsale_updated_at: 2022-05-12T03:17:39.568Z,
-  // realPrice: 12
-  async updateQuantity(itemFlashsale, item, quantity, total) {
-    //# update & check quantity for flashsale || Item
-    if (itemFlashsale && itemFlashsale.item_flashsale_quantity != 0) {
+  async updateQuantity(query, item, quantity, itemsPrice, order) {
+    if (query && query.item_flashsale_quantity != 0) {
       const newItemFlashsale = {
-        quantity: itemFlashsale.item_flashsale_quantity - quantity,
+        quantity: query.item_flashsale_quantity - quantity,
       };
       await this.itemFlashsalesService.update(
-        itemFlashsale.item_flashsale_id,
+        query.item_flashsale_id,
         newItemFlashsale,
       );
-      return itemFlashsale.realPrice * quantity;
+      //# create order detail
+      await this.createOrderDetail(item, order, query.item_flashsale_id, quantity, query.realPrice);
+
+      return itemsPrice + query.realPrice * quantity;
     } else {
       const newItem = {
         quantity: item.quantity - quantity,
       };
+
       await this.itemsService.update(item.id, newItem, null);
-      return itemFlashsale.price * quantity;
+
+      //# create order detail
+      await this.createOrderDetail(item, order, query.item_flashsale_id, quantity, query.price);
+
+      return itemsPrice + query.price * quantity;
     }
+  }
+  async createOrderDetail(item, order, iteamFlashsaleId, quantity, price) {
+    const itemFlashsale = iteamFlashsaleId
+      ? await this.itemFlashsalesService.findOne(iteamFlashsaleId)
+      : null;
+    const orderDetail = await this.orderDetailsRepository.create({
+      item,
+      order,
+      quantity,
+      price,
+      itemFlashsale,
+    });
+    console.log(orderDetail);
   }
   findAll() {
     return `This action returns all orders`;
