@@ -8,10 +8,10 @@ export class UpdateItemFlashsaleDto {
   // @Type(() => Number)
   @IsOptional()
   @ApiProperty({ required: false })
-  discount: number;
+  discount?: number;
 
   @IsOptional()
   @ApiProperty({ required: false })
   @IsInt()
-  quantity: number;
+  quantity?: number;
 }

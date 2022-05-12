@@ -20,7 +20,11 @@ export class Category {
   @Column({ unique: true })
   name: string;
 
-  @Column('text')
+  @Column({
+    type: 'enum',
+    enum: CategoryStatus,
+    default: CategoryStatus.Active,
+  })
   status: CategoryStatus;
 
   @OneToMany((type) => Item, (item) => item.category)

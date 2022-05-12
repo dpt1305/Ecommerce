@@ -9,6 +9,10 @@ export class CreateOrderDetailDto {
   @ApiProperty()
   itemId: string;
 
+  @IsString()
+  @ApiProperty()
+  orderId: string;
+
   @IsNumber()
   @ApiProperty({ type: 'number', format: 'int' })
   quantity: number;

@@ -113,11 +113,6 @@ export class ItemsController {
   ) {
     return this.itemsService.create(createItemDto, categoryId, files);
   }
-  @Get('/test')
-  test() {
-    console.log('asdfasdvv cv rtger fewfvbv ');
-    return this.itemsService.getRealPrice();
-  }
 
   @Get()
   findAll() {

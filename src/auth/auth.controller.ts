@@ -40,8 +40,8 @@ export class AuthController {
     const account = await this.usersService.create(createUserDto);
     const token = await this.authService.generateOTP(account.id);
 
-    const result = await this.authService.verifyOTP(account.id, token);
-    console.log(result);
+    // const result = await this.authService.verifyOTP(account.id, token);
+    // console.log(result);
 
     this.sendmailService.sendVerifiedEmail(account.email, token);
     return account;

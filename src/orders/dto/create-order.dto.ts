@@ -1,7 +1,22 @@
+import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { OrderStatus } from './../entities/order.entity';
-import { IsString, IsNumber, IsEnum, IsOptional, IsNumberString } from 'class-validator';
-// ApiProperty
+import {
+  IsString,
+  IsNumber,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsArray,
+  IsNumberString,
+  ValidateNested,
+} from 'class-validator';
+
+class ItemOrder {
+  itemId: string;
+  quantity: number;
+}
+
 export class CreateOrderDto {
   @IsString()
   @ApiProperty({ type: String })
@@ -20,18 +35,17 @@ export class CreateOrderDto {
   // @IsOptional()
   // status: OrderStatus;
 
-  @IsNumberString()
+  @IsNumber()
   @IsOptional()
-  @ApiProperty({ type: Number, required: false })
+  @ApiProperty({ type: Number })
   shippingPrice: number;
 
-  // @IsNumber()
-  // @IsOptional()
-  // @ApiProperty({ type: Number, required: false })
-  // itemsPrice: number;
-
-  // @IsNumber()
-  // @IsOptional()
-  // @ApiProperty({ type: Number, required: false })
-  // total: number;
+  @ApiProperty({
+    description: 'ItemOrder : {itemId : string, quantity : number}',
+  })
+  @IsNotEmpty()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ItemOrder)
+  items: ItemOrder[];
 }

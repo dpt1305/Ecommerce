@@ -1,3 +1,5 @@
+import { ItemsService } from './../items/items.service';
+import { OrderDetailsService } from './order-details.service';
 import { Voucher } from './../vouchers/entities/voucher.entity';
 import { OrderStatus } from './entities/order.entity';
 import { VouchersService } from './../vouchers/vouchers.service';
@@ -16,12 +18,14 @@ export class OrdersService {
     private ordersRepository: OrdersRepository,
     private usersService: UsersService,
     private vouchersService: VouchersService,
+    private orderDetailsService: OrderDetailsService,
+    private itemsService: ItemsService,
   ) {}
 
   async create(createOrderDto: CreateOrderDto) {
-    const { voucherId, userId } = createOrderDto;
+    const { voucherId, userId, items } = createOrderDto;
     console.log(createOrderDto);
-    
+
     const user = await this.usersService.findOne(userId);
     console.log(user);
 
@@ -30,20 +34,22 @@ export class OrdersService {
       : null;
     console.log(voucher);
 
-    const order = await this.ordersRepository.create( {
-      ...createOrderDto,
-      user,
-      voucher,
-      status: OrderStatus.Waiting,
-    });
-    console.log(order);
+    console.log(await this.itemsService.getRealPrice(items[0].itemId));
+    
+    // const order = await this.ordersRepository.create({
+    //   ...createOrderDto,
+    //   user,
+    //   voucher,
+    //   status: OrderStatus.Waiting,
+    // });
+    // return await this.ordersRepository.save(order);
   }
 
   findAll() {
     return `This action returns all orders`;
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} order`;
   }
 

@@ -15,5 +15,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     ItemsModule,
     FlashsalesModule,
   ],
+  exports: [ItemFlashsalesService],
 })
 export class ItemFlashsalesModule {}

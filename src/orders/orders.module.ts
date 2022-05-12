@@ -12,7 +12,6 @@ import { OrdersService } from './orders.service';
 import { OrdersController } from './orders.controller';
 import { OrderDetailsService } from './order-details.service';
 
-
 @Module({
   controllers: [OrdersController],
   providers: [OrdersService, OrderDetailsService],
@@ -25,5 +24,6 @@ import { OrderDetailsService } from './order-details.service';
     UsersModule,
     VouchersModule,
   ],
+  exports: [OrderDetailsService, OrdersService],
 })
 export class OrdersModule {}

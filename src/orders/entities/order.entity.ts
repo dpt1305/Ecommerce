@@ -32,10 +32,10 @@ export class Order {
   @Column('float')
   shippingPrice: number;
 
-  @Column('float')
+  @Column({ type: 'float', nullable: true })
   itemsPrice: number;
 
-  @Column('float')
+  @Column({ type: 'float', nullable: true })
   total: number;
 
   @Column('text')

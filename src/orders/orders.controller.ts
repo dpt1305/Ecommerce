@@ -10,6 +10,7 @@ import {
   Param,
   Delete,
   BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -25,8 +26,8 @@ export class OrdersController {
   ) {}
 
   @Post()
-  @ApiConsumes('multipart/form-data')
-  @FormDataRequest()
+  // @ApiConsumes('multipart/form-data')
+  // @FormDataRequest()
   create(@Body() createOrderDto: CreateOrderDto) {
     try {
       return this.ordersService.create(createOrderDto);
@@ -47,7 +48,11 @@ export class OrdersController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.ordersService.findOne(+id);
+    try {
+      return this.ordersService.findOne(id);
+    } catch (error) {
+      throw new NotFoundException('Can not find order.');
+    }
   }
 
   @Patch(':id')

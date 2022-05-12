@@ -62,7 +62,6 @@ export class ItemFlashsalesService {
   async update(id: string, updateItemFlashsaleDto: UpdateItemFlashsaleDto) {
     try {
       const itemFlashsale = await this.findOne(id);
-      console.log(itemFlashsale, updateItemFlashsaleDto);
 
       return await this.itemFlashsalesRepository.save({
         ...itemFlashsale,
