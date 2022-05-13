@@ -55,6 +55,9 @@ export class Item {
   })
   status: ItemStatus;
 
+  @Column('boolean')
+  isSale: boolean;
+
   @CreateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',

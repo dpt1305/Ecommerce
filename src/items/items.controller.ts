@@ -1,3 +1,4 @@
+import { ItemFlashsale } from './../item-flashsales/entities/item-flashsale.entity';
 import { DecreaseItemDto } from './dto/decrease-item.dto';
 import { ItemsRepository } from './items.repository';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -23,6 +24,7 @@ import {
   FilesInterceptor,
   FileInterceptor,
 } from '@nestjs/platform-express';
+import { getConnection } from 'typeorm';
 // import { ApiTags, ApiConsumes}
 @ApiTags('Items')
 @Controller('items')
@@ -112,6 +114,45 @@ export class ItemsController {
     },
   ) {
     return this.itemsService.create(createItemDto, categoryId, files);
+  }
+
+  @Get('testupdateitem')
+  async updateItem() {
+    const items = await this.itemsService.findAll();
+    console.log(items);
+
+    const timeNow = new Date();
+    for (let index = 0; index < items.length; index++) {
+      let itemId = (items[index].id);
+      
+      const query = await getConnection()
+        .createQueryBuilder()
+        .select('item')
+        .addSelect('item_flashsale')
+        .addSelect('flashsale')
+        .addSelect('item.price', 'price')
+        .addSelect('item.price*(1-item_flashsale.discount)', 'realPrice')
+        .from(ItemFlashsale, 'item_flashsale')
+        .leftJoin('item_flashsale.item', 'item')
+        .innerJoin('item_flashsale.flashsale', 'flashsale')
+        .where('item.id = :id', { id: itemId })
+        .andWhere('flashsale.startSale < :timeNow', { timeNow })
+        .andWhere('flashsale.endSale > :timeNow', { timeNow })
+        .orderBy('item_flashsale.discount', 'DESC')
+        .limit(1)
+        .execute();
+      console.log(query);
+
+      if( query[0] ) {
+        await this.itemsService.updateIsSaleTrue(itemId);
+      }
+      else {
+        await this.itemsService.updateIsSaleFalse(itemId);
+      }
+      
+    }
+    
+    return items;
   }
 
   @Get()

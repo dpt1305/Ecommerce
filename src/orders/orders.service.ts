@@ -70,8 +70,11 @@ export class OrdersService {
 
       let item = await this.itemsService.findOne(items[index].itemId);
 
-      //# check quantity
-      this.checkQuantity( items[index].quantity, query.item_flashsale_quantity, query.item_quantity );
+      //# check quantity for flashsale 
+      if( item.isSale ) {
+
+        this.checkQuantity( items[index].quantity, query.item_flashsale_quantity, query.item_quantity );
+      }
 
       //# update quantity and calculate itemsPrice price
       //# and create order detail

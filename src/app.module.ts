@@ -21,6 +21,7 @@ import { OrdersModule } from './orders/orders.module';
 import { APP_GUARD } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronjobService } from './cronjob/cronjob.service';
+import { CronjobModule } from './cronjob/cronjob.module';
 // RolesGuard
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { CronjobService } from './cronjob/cronjob.service';
     ItemFlashsalesModule,
     VouchersModule,
     OrdersModule,
+    CronjobModule,
   ],
   controllers: [AppController],
   providers: [

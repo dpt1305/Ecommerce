@@ -32,10 +32,15 @@ export class ItemsService {
   async create(createItemDto: CreateItemDto, categoryId: string, files: any) {
     const category = await this.categoriesService.findOne(categoryId);
 
+    if( !(files.avatar && files.images) ) {
+      throw new BadRequestException('Must post avatar and images.');
+    }
+
     const newItem = await this.itemsRepository.create({
       ...createItemDto,
       avatar: files.avatar[0].path,
       category,
+      isSale: false,
     });
     await this.itemsRepository.save(newItem);
 
@@ -135,5 +140,24 @@ export class ItemsService {
       .limit(1)
       .execute();
     return query[0];
+  }
+
+  async updateIsSaleTrue (id: string) {
+    let item = await this.findOne( id );
+    if( !item.isSale ) {
+      await this.itemsRepository.save({
+        ...item,
+        isSale: true,
+      })
+    }
+  }
+  async updateIsSaleFalse (id: string) {
+    let item = await this.findOne( id );
+    if (item.isSale) {
+      await this.itemsRepository.save({
+        ...item,
+        isSale: false,
+      })
+    }
   }
 }
