@@ -1,3 +1,4 @@
+import { Item } from './../items/entities/item.entity';
 import { OrderDetail } from './entities/order-detail.entity';
 import { OrderDetailsRepository } from './order-details.repository';
 import { ItemFlashsalesService } from './../item-flashsales/item-flashsales.service';
@@ -66,19 +67,27 @@ export class OrdersService {
     //# calculate  order.itemsPrice
     let itemsPrice = 0;
     for (let index = 0; index < items.length; index++) {
-      const query = await this.itemsService.getItemWithFlashsale( items[index].itemId );
-
       let item = await this.itemsService.findOne(items[index].itemId);
-
+      
+      
+      
       //# check quantity for flashsale 
       if( item.isSale ) {
+        const query = await this.itemsService.getItemWithFlashsale( items[index].itemId );
+        this.checkQuantityForSale( items[index].quantity, query.item_flashsale_quantity, query.item_quantity );
+        console.log(query);
+        
+        //# update quantity and calculate itemsPrice price
+        //# and create order detail
+        itemsPrice = await this.updateQuantityIsSaleAndCreateOrderDetail( query, item, items[index].quantity, itemsPrice, order );
+      } else {
+        
+        this.checkQuantity( items[index].quantity, item.quantity );
+        itemsPrice = await this.updateQuantityIsSaleAndCreateOrderDetail( null, item, items[index].quantity, itemsPrice, order );
 
-        this.checkQuantity( items[index].quantity, query.item_flashsale_quantity, query.item_quantity );
       }
 
-      //# update quantity and calculate itemsPrice price
-      //# and create order detail
-      itemsPrice = await this.updateQuantityAndCreateOrderDetail( query, item, items[index].quantity, itemsPrice, order );
+      
     }
 
     //# apply voucher
@@ -108,7 +117,7 @@ export class OrdersService {
     });
   }
 
-  checkQuantity(
+  checkQuantityForSale(
     quantity: number,
     item_flashsale_quantity: number,
     item_quantity: number,
@@ -123,8 +132,29 @@ export class OrdersService {
       throw new BadRequestException('Quantity is not good.');
     }
   }
+  checkQuantity(quantity: number, itemQuantity: number) {
+    if (quantity == 0  || quantity > itemQuantity) {
+      throw new BadRequestException('Quantity is not good.');
+    }
+  }
 
-  async updateQuantityAndCreateOrderDetail(query, item, quantity, itemsPrice, order) {
+  async updateQuantityIsSaleAndCreateOrderDetail(query, item, quantity, itemsPrice, order) {
+
+    if(query == null) {
+      console.log(query, item, quantity, itemsPrice, order);
+      
+      const newItem = {
+        quantity: item.quantity - quantity,
+      };
+
+      await this.itemsService.update(item.id, newItem, null);
+
+      //# create order detail
+      await this.createOrderDetail(item, order, null, quantity, item.price);
+
+      return itemsPrice + query.price * quantity;
+    }
+    
     if (query && query.item_flashsale_quantity != 0) {
       const newItemFlashsale = {
         quantity: query.item_flashsale_quantity - quantity,
@@ -134,34 +164,41 @@ export class OrdersService {
         newItemFlashsale,
       );
       //# create order detail
-      await this.createOrderDetail(item, order, query.item_flashsale_id, quantity, query.realPrice);
+      await this.createOrderDetail(item, order, query.item_flashsale_id, quantity, item.price);
 
       return itemsPrice + query.realPrice * quantity;
-    } else {
-      const newItem = {
-        quantity: item.quantity - quantity,
-      };
-
-      await this.itemsService.update(item.id, newItem, null);
-
-      //# create order detail
-      await this.createOrderDetail(item, order, query.item_flashsale_id, quantity, query.price);
-
-      return itemsPrice + query.price * quantity;
-    }
+    } 
   }
+  async updateQuantityAndCreateOrderDetail(item: Item, quantityItem: number, itemsPrice: number) {
+    // await this.itemsService.update()
+  }
+
   async createOrderDetail(item, order, iteamFlashsaleId, quantity, price) {
-    const itemFlashsale = iteamFlashsaleId
+    const itemFlashsale = iteamFlashsaleId 
       ? await this.itemFlashsalesService.findOne(iteamFlashsaleId)
       : null;
-    const orderDetail = await this.orderDetailsRepository.create({
+
+    if (itemFlashsale == null) {
+      let orderDetail = await this.orderDetailsRepository.create({
+        item,
+        order,
+        quantity,
+        price,
+        itemFlashsale: null,
+      });
+      
+      await this.orderDetailsRepository.save( orderDetail );
+    } 
+    let orderDetail = await this.orderDetailsRepository.create({
       item,
       order,
       quantity,
       price,
       itemFlashsale,
     });
-    return await this.orderDetailsRepository.save( orderDetail );
+    await this.orderDetailsRepository.save( orderDetail );
+
+    
   }
 
 

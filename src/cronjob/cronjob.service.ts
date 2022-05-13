@@ -12,7 +12,7 @@ export class CronjobService {
     private itemsService: ItemsService,
   ) {}
 
-  @Cron('*/20 * * * *', {
+  @Cron('*/2 * * * *', {
     name: 'checkIsSaleItems',
     timeZone: 'Asia/Ho_Chi_Minh',
   })
@@ -40,7 +40,6 @@ export class CronjobService {
         .orderBy('item_flashsale.discount', 'DESC')
         .limit(1)
         .execute();
-      console.log(query);
 
       if( query[0] ) {
         await this.itemsService.updateIsSaleTrue(itemId);
