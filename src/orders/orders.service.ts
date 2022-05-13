@@ -61,42 +61,22 @@ export class OrdersService {
     console.log(user, voucher);
 
     //# create order => get constraint
-    let order = await this.ordersRepository.save({
-      shippingPrice,
-      status: OrderStatus.Waiting,
-      user,
-      addressShipping,
-    });
-    console.log(order);
+    let order = await this.ordersRepository.save({ shippingPrice, status: OrderStatus.Waiting, user, addressShipping });
     
     //# calculate  order.itemsPrice
     let itemsPrice = 0;
     for (let index = 0; index < items.length; index++) {
-      const query = await this.itemsService.getItemWithFlashsale(
-        items[index].itemId,
-      );
-      console.log(query);
+      const query = await this.itemsService.getItemWithFlashsale( items[index].itemId );
 
       let item = await this.itemsService.findOne(items[index].itemId);
-      console.log(query, 111111, item);
 
       //# check quantity
-      this.checkQuantity(
-        items[index].quantity,
-        query.item_flashsale_quantity,
-        query.item_quantity,
-      );
+      this.checkQuantity( items[index].quantity, query.item_flashsale_quantity, query.item_quantity );
 
       //# update quantity and calculate itemsPrice price
-      itemsPrice = await this.updateQuantity(
-        query,
-        item,
-        items[index].quantity,
-        itemsPrice,
-        order,
-      );
+      //# and create order detail
+      itemsPrice = await this.updateQuantityAndCreateOrderDetail( query, item, items[index].quantity, itemsPrice, order );
     }
-    console.log(itemsPrice);
 
     //# apply voucher
     if (voucher) {
@@ -107,6 +87,7 @@ export class OrdersService {
           shippingPrice,
         );
       console.log(newItemsPrice, newShippingPrice);
+
       return await this.ordersRepository.save({
         ...order,
         voucher,
@@ -122,13 +103,6 @@ export class OrdersService {
       itemsPrice,
       total: shippingPrice + itemsPrice,
     });
-    // console.log(order);
-
-    // //# save  OrderDetail
-    // items.forEach(async (element) => {
-    //   await this.createOrderDetail();
-    // });
-    // return await this.ordersRepository.save(order);
   }
 
   checkQuantity(
@@ -147,7 +121,7 @@ export class OrdersService {
     }
   }
 
-  async updateQuantity(query, item, quantity, itemsPrice, order) {
+  async updateQuantityAndCreateOrderDetail(query, item, quantity, itemsPrice, order) {
     if (query && query.item_flashsale_quantity != 0) {
       const newItemFlashsale = {
         quantity: query.item_flashsale_quantity - quantity,
@@ -184,7 +158,7 @@ export class OrdersService {
       price,
       itemFlashsale,
     });
-    console.log(orderDetail);
+    return await this.orderDetailsRepository.save( orderDetail );
   }
 
 

@@ -1,3 +1,4 @@
+import { Item } from './../items/entities/item.entity';
 import { OrderDetail } from './entities/order-detail.entity';
 import { OrdersService } from './orders.service';
 import { OrdersRepository } from './orders.repository';

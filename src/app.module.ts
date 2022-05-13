@@ -19,6 +19,8 @@ import { ItemFlashsalesModule } from './item-flashsales/item-flashsales.module';
 import { VouchersModule } from './vouchers/vouchers.module';
 import { OrdersModule } from './orders/orders.module';
 import { APP_GUARD } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronjobService } from './cronjob/cronjob.service';
 // RolesGuard
 @Module({
   imports: [
@@ -56,6 +58,7 @@ import { APP_GUARD } from '@nestjs/core';
     MulterModule.register({
       dest: './files',
     }),
+    ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
     CategoriesModule,
@@ -74,6 +77,7 @@ import { APP_GUARD } from '@nestjs/core';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
+    CronjobService,
   ],
 })
 export class AppModule {}
