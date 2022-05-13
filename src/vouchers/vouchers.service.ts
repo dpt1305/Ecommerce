@@ -66,23 +66,30 @@ export class VouchersService {
     shippingPrice: number,
   ) {
     if (voucher.quantity == 0 || itemsPrice <= voucher.min) {
-      throw new BadRequestException('Can not apply this voucher');
+      throw new BadRequestException('Voucher is invalid.');
+    }
+    const timeNow = new Date();
+    if (voucher.startTime > timeNow || voucher.endTime < timeNow) {
+      throw new BadRequestException('Voucher is invalid.');
     }
 
-    if(voucher.type === VoucherType.Shipping) {
-      const ship = (1 - voucher.discount) * shippingPrice;
-      shippingPrice = ship > voucher.max ? shippingPrice - voucher.max : ship;
+    if (voucher.type === VoucherType.Shipping) {
+      const decrease = voucher.discount * shippingPrice;
+      shippingPrice = decrease > voucher.max
+          ? shippingPrice - voucher.max
+          : shippingPrice - decrease;
     }
 
-    if(voucher.type == VoucherType.Discount) {
-      const discount = (1 - voucher.discount) * itemsPrice;
-      itemsPrice = discount > voucher.max ? itemsPrice - voucher.max : discount;
+    if (voucher.type == VoucherType.Discount) {
+      const discount = voucher.discount * itemsPrice;
+      itemsPrice = ( discount > voucher.max )
+          ? itemsPrice - voucher.max
+          : itemsPrice - discount;
     }
     await this.vouchersRepository.save({
       ...voucher,
       quantity: voucher.quantity - 1,
     });
-    
     return { itemsPrice, shippingPrice };
   }
 }

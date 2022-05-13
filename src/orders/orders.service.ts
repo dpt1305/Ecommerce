@@ -50,6 +50,7 @@ export class OrdersService {
       createOrderDto;
     console.log(createOrderDto);
 
+    //# get information
     let user = await this.usersService.findOne(userId);
     const voucher = voucherCode
       ? await this.vouchersService.findVoucherByCode(voucherCode)
@@ -106,7 +107,7 @@ export class OrdersService {
           shippingPrice,
         );
       console.log(newItemsPrice, newShippingPrice);
-      await this.ordersRepository.save({
+      return await this.ordersRepository.save({
         ...order,
         voucher,
         shippingPrice: newShippingPrice,
@@ -115,7 +116,7 @@ export class OrdersService {
       });
       console.log(order);
     }
-    await this.ordersRepository.save({
+    return await this.ordersRepository.save({
       ...order,
       voucher: null,
       itemsPrice,
@@ -185,6 +186,8 @@ export class OrdersService {
     });
     console.log(orderDetail);
   }
+
+
   findAll() {
     return `This action returns all orders`;
   }
