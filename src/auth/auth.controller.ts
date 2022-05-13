@@ -1,3 +1,4 @@
+import { ForgetPasswordDto } from './dto/forget-password.dto';
 import { Role } from './../users/entities/user.entity';
 import { Roles } from './../authorization/roles.decorator';
 import { SendmailService } from './../sendmail/sendmail.service';
@@ -16,6 +17,7 @@ import {
   UseGuards,
   NotAcceptableException,
   BadRequestException,
+  RequestTimeoutException,
 } from '@nestjs/common';
 import { FormDataRequest } from 'nestjs-form-data';
 import { AuthService } from './auth.service';
@@ -40,9 +42,6 @@ export class AuthController {
     const account = await this.usersService.create(createUserDto);
     const token = await this.authService.generateOTP(account.id);
 
-    // const result = await this.authService.verifyOTP(account.id, token);
-    // console.log(result);
-
     this.sendmailService.sendVerifiedEmail(account.email, token);
     return account;
   }
@@ -62,11 +61,44 @@ export class AuthController {
       throw new BadRequestException('OTP is incorrect.');
     }
   }
+  @Get('requestforgetpassword/?')
+  async requestForgetPassword(@Query('email') email: string) {
+    try {
+      const user = await this.usersService.findByEmail(email);
+      const otp = await this.authService.generateOTP(user.id);
+      
+      await this.sendmailService.sendForgetPassword(user.email, otp);
+
+    } catch (error) {
+      throw new RequestTimeoutException();
+    }
+  }
 
   @Post('signin')
   signIn(@Body() createAuthDto: CreateAuthDto) {
     return this.authService.signIn(createAuthDto);
   }
+
+  @Post('forgetpassword')
+  async forgetPassword(@Body() forgetPasswordDto: ForgetPasswordDto) {
+    try {
+      const { email, newPassword, otp } = forgetPasswordDto;
+      const user = await this.usersService.findByEmail(email);
+
+      const result = await this.authService.verifyOTP(user.id, otp);
+      if (result) {
+        this.usersService.updatePassword( email, newPassword )
+        return `Reset password sucessfully.`;
+      }
+
+      throw new BadRequestException('OTP is incorrect.');
+    } catch (error) {
+      throw new BadRequestException('Can not reset password.');
+    }
+  }
+
+
+
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
   @Roles(Role.User)

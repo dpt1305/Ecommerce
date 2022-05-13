@@ -5,8 +5,8 @@ import { Cron } from '@nestjs/schedule';
 export class CronjobService {
   private readonly logger = new Logger(CronjobService.name);
 
-  @Cron('45 * * * * *')
-  handleCron() {
-    this.logger.debug('Called when the current second is 45');
-  }
+  // @Cron('45 * * * * *')
+  // handleCron() {
+  //   // this.logger.debug('Called when the current second is 45');
+  // }
 }

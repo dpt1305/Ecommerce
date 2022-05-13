@@ -1,3 +1,4 @@
+import { ForgetPasswordDto } from './../auth/dto/forget-password.dto';
 import { UsersRepository } from './users.repository';
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -64,5 +65,17 @@ export class UsersService {
       ...user,
       verified: true,
     });
+  }
+  async updatePassword(email: string, newPassword: string) {
+    const user = await  this.findByEmail(email);
+
+    const saltRounds = 10;
+    const hash = bcrypt.hashSync(newPassword, saltRounds);
+
+    return await this.usersRepository.save({
+      ...user,
+      password: hash,
+    })
+    
   }
 }

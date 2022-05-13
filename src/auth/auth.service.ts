@@ -38,6 +38,9 @@ export class AuthService {
     if (!account || !check) {
       return 'Email or password is incorrect';
     }
+    if ( !account.verified ) {
+      return 'Please verified this account.';
+    }
     const payload = account.email;
     const access_token: string = await this.jwtService.sign({ payload });
     return `jwt: ${access_token}`;
