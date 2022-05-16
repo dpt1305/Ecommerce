@@ -65,13 +65,10 @@ export class VouchersService {
     itemsPrice: number,
     shippingPrice: number,
   ) {
-    if (voucher.quantity == 0 || itemsPrice <= voucher.min) {
+    if (itemsPrice <= voucher.min) {
       throw new BadRequestException('Voucher is invalid.');
     }
-    const timeNow = new Date();
-    if (voucher.startTime > timeNow || voucher.endTime < timeNow) {
-      throw new BadRequestException('Voucher is invalid.');
-    }
+    
 
     if (voucher.type === VoucherType.Shipping) {
       const decrease = voucher.discount * shippingPrice;

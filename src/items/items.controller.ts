@@ -2,7 +2,7 @@ import { ItemFlashsale } from './../item-flashsales/entities/item-flashsale.enti
 import { DecreaseItemDto } from './dto/decrease-item.dto';
 import { ItemsRepository } from './items.repository';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ApiConsumes, ApiTags, ApiBody } from '@nestjs/swagger';
+import { ApiConsumes, ApiTags, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import {
   Controller,
@@ -25,8 +25,13 @@ import {
   FileInterceptor,
 } from '@nestjs/platform-express';
 import { getConnection } from 'typeorm';
-// import { ApiTags, ApiConsumes}
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from './../authorization/roles.guard';
+import { Role } from './../users/entities/user.entity';
+
 @ApiTags('Items')
+@ApiBearerAuth()
 @Controller('items')
 export class ItemsController {
   constructor(private readonly itemsService: ItemsService) {}

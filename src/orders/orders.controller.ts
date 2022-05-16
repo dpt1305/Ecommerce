@@ -16,6 +16,11 @@ import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CreateOrderDetailDto } from './dto/create-order-detail.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from './../authorization/roles.guard';
+import { Role } from './../users/entities/user.entity';
 
 @Controller('orders')
 @ApiTags('Order')

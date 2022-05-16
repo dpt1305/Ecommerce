@@ -86,6 +86,16 @@ export class ItemsService {
     await this.itemsRepository.save(update);
     return update;
   }
+  async updateQuantityAfterFlashsale(id: string, quantity: number) {
+    const item = await this.findOne(id);
+    console.log(item);
+    
+    const update = {
+      ...item,
+      quantity: item.quantity + quantity,
+    };
+    await this.itemsRepository.save(update);
+  }
 
   async remove(id: string) {
     try {

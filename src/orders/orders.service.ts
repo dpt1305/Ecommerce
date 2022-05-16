@@ -56,10 +56,18 @@ export class OrdersService {
     const voucher = voucherCode
       ? await this.vouchersService.findVoucherByCode(voucherCode)
       : null;
+
+    //# check voucher
     if (user === undefined || voucher === undefined) {
       throw new NotFoundException('Can not find information.');
     }
-    console.log(user, voucher);
+    if (voucher.quantity == 0) {
+      throw new BadRequestException('Voucher is invalid.');
+    }
+    const timeNow = new Date();
+    if (voucher.startTime > timeNow || voucher.endTime < timeNow) {
+      throw new BadRequestException('Voucher is invalid.');
+    }
 
     //# create order => get constraint
     let order = await this.ordersRepository.save({ shippingPrice, status: OrderStatus.Waiting, user, addressShipping });
@@ -75,6 +83,7 @@ export class OrdersService {
       if( item.isSale ) {
         const query = await this.itemsService.getItemWithFlashsale( items[index].itemId );
         this.checkQuantityForSale( items[index].quantity, query.item_flashsale_quantity, query.item_quantity );
+        
         console.log(query);
         
         //# update quantity and calculate itemsPrice price
@@ -84,9 +93,9 @@ export class OrdersService {
         
         this.checkQuantity( items[index].quantity, item.quantity );
         itemsPrice = await this.updateQuantityIsSaleAndCreateOrderDetail( null, item, items[index].quantity, itemsPrice, order );
+        console.log(11111111111111, item);
 
       }
-
       
     }
 
@@ -151,8 +160,8 @@ export class OrdersService {
 
       //# create order detail
       await this.createOrderDetail(item, order, null, quantity, item.price);
-
-      return itemsPrice + query.price * quantity;
+      
+      return itemsPrice + item.price * quantity;
     }
     
     if (query && query.item_flashsale_quantity != 0) {
@@ -169,11 +178,10 @@ export class OrdersService {
       return itemsPrice + query.realPrice * quantity;
     } 
   }
-  async updateQuantityAndCreateOrderDetail(item: Item, quantityItem: number, itemsPrice: number) {
-    // await this.itemsService.update()
-  }
 
   async createOrderDetail(item, order, iteamFlashsaleId, quantity, price) {
+    console.log(item, order, iteamFlashsaleId, quantity, price);
+    
     const itemFlashsale = iteamFlashsaleId 
       ? await this.itemFlashsalesService.findOne(iteamFlashsaleId)
       : null;
@@ -188,15 +196,17 @@ export class OrdersService {
       });
       
       await this.orderDetailsRepository.save( orderDetail );
-    } 
-    let orderDetail = await this.orderDetailsRepository.create({
-      item,
-      order,
-      quantity,
-      price,
-      itemFlashsale,
-    });
-    await this.orderDetailsRepository.save( orderDetail );
+    } else {
+      let orderDetail = await this.orderDetailsRepository.create({
+        item,
+        order,
+        quantity,
+        price,
+        itemFlashsale,
+      });
+      await this.orderDetailsRepository.save( orderDetail );
+
+    }
 
     
   }

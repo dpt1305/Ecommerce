@@ -11,6 +11,11 @@ import {
 import { VouchersService } from './vouchers.service';
 import { CreateVoucherDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from './../authorization/roles.guard';
+import { Role } from './../users/entities/user.entity';
 
 @ApiTags('Voucher')
 @Controller('vouchers')

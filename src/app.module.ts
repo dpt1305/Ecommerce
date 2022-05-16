@@ -75,10 +75,10 @@ import { CronjobModule } from './cronjob/cronjob.module';
   controllers: [AppController],
   providers: [
     AppService,
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: RolesGuard,
+    // },
     CronjobService,
   ],
 })

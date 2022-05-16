@@ -1,3 +1,4 @@
+import { RolesGuard } from './../authorization/roles.guard';
 import { ForgetPasswordDto } from './dto/forget-password.dto';
 import { Role } from './../users/entities/user.entity';
 import { Roles } from './../authorization/roles.decorator';
@@ -99,9 +100,9 @@ export class AuthController {
 
 
 
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(), RolesGuard)
   @ApiBearerAuth()
-  @Roles(Role.User)
+  @Roles(Role.User, Role.Admin)
   @Get('test')
   test() {
     return 'this is test for authen';

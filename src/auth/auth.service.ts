@@ -39,6 +39,9 @@ export class AuthService {
       return 'Email or password is incorrect';
     }
     if ( !account.verified ) {
+      const token = await this.generateOTP(account.id);
+
+      await this.sendmailService.sendVerifiedEmail(account.email, token);
       return 'Please verified this account.';
     }
     const payload = account.email;

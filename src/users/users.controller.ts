@@ -20,6 +20,11 @@ import { ApiTags, ApiConsumes } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from './../authorization/roles.guard';
+import { Role } from './../users/entities/user.entity';
 
 @ApiTags('users')
 @Controller('users')

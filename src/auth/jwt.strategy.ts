@@ -19,16 +19,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  // async validate(payload) {
-  //   const email = payload.payload;
-  //   const user: User = await this.usersService.findByEmail(email);
-
-  //   if (!user) {
-  //     throw new UnauthorizedException();
-  //   }
-  //   if (!user.verified) {
-  //     throw new NotAcceptableException();
-  //   }
-  //   return user;
-  // }
+  async validate(payload) {
+    const email = payload.payload;
+    const user: User = await this.usersService.findByEmail(email);
+    
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    if (!user.verified) {
+      throw new NotAcceptableException();
+    }
+    return user;
+  }
 }

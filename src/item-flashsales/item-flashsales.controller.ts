@@ -12,7 +12,11 @@ import {
 import { ItemFlashsalesService } from './item-flashsales.service';
 import { CreateItemFlashsaleDto } from './dto/create-item-flashsale.dto';
 import { UpdateItemFlashsaleDto } from './dto/update-item-flashsale.dto';
-
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from './../authorization/roles.guard';
+import { Role } from './../users/entities/user.entity';
 @Controller('item-flashsales')
 @ApiTags('Item Flashsale')
 export class ItemFlashsalesController {

@@ -1,18 +1,24 @@
+import { ItemFlashsalesService } from './../item-flashsales/item-flashsales.service';
+import { Flashsale } from './../flashsales/entities/flashsale.entity';
+import { FlashsalesService } from './../flashsales/flashsales.service';
 import { ItemsService } from './../items/items.service';
 import { Item } from './../items/entities/item.entity';
 import { ItemFlashsale } from './../item-flashsales/entities/item-flashsale.entity';
 import { getConnection } from 'typeorm';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-// import { getConnection}
+import date from 'date-and-time';
+import dayjs from 'dayjs';
 @Injectable()
 export class CronjobService {
   private readonly logger = new Logger(CronjobService.name);
   constructor(
     private itemsService: ItemsService,
+    private flashsalesService: FlashsalesService,
+    private itemFlashsalesService: ItemFlashsalesService,
   ) {}
 
-  @Cron('*/2 * * * *', {
+  @Cron('0 */1 * * *', {
     name: 'checkIsSaleItems',
     timeZone: 'Asia/Ho_Chi_Minh',
   })
@@ -49,5 +55,42 @@ export class CronjobService {
       }
       
     }
+  }
+
+  @Cron(' */20 * * * *', {
+    name: 'updateQuantityAfterFlashsale',
+    timeZone: 'Asia/Ho_Chi_Minh',
+  })
+  async updateQuantityAfterFlashsale () {
+    const now = new Date();
+    
+    const last20Minutes = new Date();
+    last20Minutes.setMinutes(last20Minutes.getMinutes() - 20)
+    console.log(last20Minutes);
+    
+    const endedFlashsales = await getConnection()
+      .createQueryBuilder() 
+      .select('item_flashsale.itemId', 'itemId')
+      .addSelect('item_flashsale.quantity', 'quantity')
+      .addSelect('item_flashsale.id', 'item_flashsale_id')
+      .from(ItemFlashsale, 'item_flashsale')
+      .innerJoin('item_flashsale.flashsale', 'flashsale')
+      .where('flashsale.endSale < :now', {now})
+      .andWhere('flashsale.endSale > :last20Minutes', {last20Minutes})
+      .andWhere('item_flashsale.quantity != 0')
+      .execute();
+    console.log(endedFlashsales);
+    console.log(now);
+    
+    endedFlashsales.forEach(async (element) => {
+      await this.itemsService.updateQuantityAfterFlashsale(
+        element.itemId, 
+        element.quantity,
+      );
+      await this.itemFlashsalesService.update(
+        element.item_flashsale_id, 
+        { quantity: 0}
+      );
+    });
   }
 }

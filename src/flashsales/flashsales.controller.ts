@@ -15,7 +15,12 @@ import { CreateFlashsaleDto } from './dto/create-flashsale.dto';
 import { UpdateFlashsaleDto } from './dto/update-flashsale.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from './../authorization/roles.guard';
+import { Role } from './../users/entities/user.entity';
+import { Author } from '../authorization/author.decorator';
 @Controller('flashsales')
 @ApiTags('Flash Sale')
 @ApiConsumes('multipart/form-data')
@@ -23,6 +28,7 @@ export class FlashsalesController {
   constructor(private readonly flashsalesService: FlashsalesService) {}
 
   @Post()
+  // @UseGuards(AuthGuard(), RolesGuard),
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FilesInterceptor('flashSaleBanner', 20, {
@@ -50,6 +56,7 @@ export class FlashsalesController {
   }
 
   @Get()
+  @Author(Role.Admin)
   findAll() {
     return this.flashsalesService.findAll();
   }
